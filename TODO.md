@@ -90,6 +90,15 @@
 - [x] Add adapter parsing test script
 - [x] Keep adapter disconnected from production `/api/explain`
 
+## Milestone 4C - Mocked Gemma Provider Routing
+
+- [x] Route `gemma-hosted` through `callGemmaHostedMock`
+- [x] Keep `mock` provider returning `mockResult`
+- [x] Keep `gemma-local` as a safe not-implemented path
+- [x] Keep legacy `gemma` alias as a safe not-implemented path
+- [x] Add provider routing coverage to adapter tests
+- [x] Keep live Gemma calls inactive
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper

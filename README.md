@@ -64,8 +64,9 @@ Plainly currently uses a mocked local model provider. Real Gemma integration is
 not connected yet.
 
 Provider selection uses `PLAINLY_MODEL_PROVIDER`. If it is missing or set to
-`mock`, Plainly returns the local mocked result. `gemma` is reserved for a later
-milestone and currently returns a not-implemented error.
+`mock`, Plainly returns the local mocked result. `gemma-hosted` routes through a
+mocked adapter that still makes no network calls. `gemma-local` and the legacy
+`gemma` alias return not-implemented errors.
 
 Copy `.env.local.example` to `.env.local` when local secrets are needed. Keep
 real secrets in `.env.local` only, and do not commit them.

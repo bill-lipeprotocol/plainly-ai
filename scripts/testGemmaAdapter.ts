@@ -1,3 +1,4 @@
+import { callPlainlyModel } from "../lib/callGemma.ts";
 import { callGemmaHostedMock, parseGemmaJsonResponse } from "../lib/gemmaAdapter.ts";
 import { mockResult } from "../lib/mockResult.ts";
 
@@ -16,6 +17,15 @@ function record(name: string, passed: boolean) {
 console.log("Testing Gemma adapter parsing.");
 console.log("Full document text, prompts, and raw model responses are not printed.");
 console.log("");
+
+const modelInput = {
+  documentType: "Notice",
+  userQuestion: "",
+  documentText:
+    "Synthetic adapter test document text that is long enough to represent a pasted document but is not printed by this test script.",
+  prompt:
+    "Synthetic adapter test prompt that is passed through mocked provider routing but is not printed by this test script.",
+};
 
 try {
   const result = parseGemmaJsonResponse(JSON.stringify(mockResult));
@@ -50,18 +60,49 @@ try {
 }
 
 try {
-  const result = await callGemmaHostedMock({
-    documentType: "Notice",
-    userQuestion: "",
-    documentText:
-      "Synthetic adapter test document text that is long enough to represent a pasted document but is not printed by this test script.",
-    prompt:
-      "Synthetic adapter test prompt that is passed to the mocked adapter but is not printed by this test script.",
-  });
+  const result = await callGemmaHostedMock(modelInput);
 
   record("hosted mock returns a valid Plainly result", Boolean(result.notAdviceNotice));
 } catch {
   record("hosted mock returns a valid Plainly result", false);
+}
+
+try {
+  const result = await withModelProvider("mock", () => callPlainlyModel(modelInput));
+  record("mock provider returns result", Boolean(result.plainEnglishSummary));
+} catch {
+  record("mock provider returns result", false);
+}
+
+try {
+  const result = await withModelProvider("gemma-hosted", () =>
+    callPlainlyModel(modelInput)
+  );
+  record("gemma-hosted provider returns mocked adapter result", Boolean(result));
+} catch {
+  record("gemma-hosted provider returns mocked adapter result", false);
+}
+
+try {
+  await withModelProvider("gemma-local", () => callPlainlyModel(modelInput));
+  record("gemma-local provider fails safely", false);
+} catch (error) {
+  record(
+    "gemma-local provider fails safely",
+    error instanceof Error &&
+      error.message === "Gemma local provider is not implemented yet."
+  );
+}
+
+try {
+  await withModelProvider("unknown-provider", () => callPlainlyModel(modelInput));
+  record("unknown provider fails safely", false);
+} catch (error) {
+  record(
+    "unknown provider fails safely",
+    error instanceof Error &&
+      error.message === "Unsupported Plainly model provider: unknown-provider"
+  );
 }
 
 const passed = checks.filter((check) => check.passed).length;
@@ -74,4 +115,22 @@ console.log(`Failed: ${failed}`);
 
 if (failed > 0) {
   process.exitCode = 1;
+}
+
+async function withModelProvider<T>(
+  provider: string,
+  callback: () => Promise<T>
+): Promise<T> {
+  const previousProvider = process.env.PLAINLY_MODEL_PROVIDER;
+  process.env.PLAINLY_MODEL_PROVIDER = provider;
+
+  try {
+    return await callback();
+  } finally {
+    if (typeof previousProvider === "undefined") {
+      delete process.env.PLAINLY_MODEL_PROVIDER;
+    } else {
+      process.env.PLAINLY_MODEL_PROVIDER = previousProvider;
+    }
+  }
 }
