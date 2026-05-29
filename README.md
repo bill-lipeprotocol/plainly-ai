@@ -39,6 +39,16 @@ npm install
 npm run dev
 ```
 
+To run the local synthetic API regression check, keep the dev server running and
+use another terminal:
+
+```bash
+npm run test:api
+```
+
+The API test posts synthetic samples to local `/api/explain` and reports
+pass/fail status without printing full document text or prompts.
+
 ## Model Provider
 
 Plainly currently uses a mocked local model provider. Real Gemma integration is

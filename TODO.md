@@ -63,6 +63,15 @@
 - [x] Avoid exposing raw provider or server error details
 - [x] Preserve loading, success, high-risk alert, and feedback behavior
 
+## Milestone 3D - Local API Regression Script
+
+- [x] Add local synthetic API regression script
+- [x] Post synthetic samples to local `/api/explain`
+- [x] Report sample status, result presence, and high-risk alert match
+- [x] Print total passed and failed counts
+- [x] Avoid printing full document text or prompts
+- [x] Add `npm run test:api`
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper
