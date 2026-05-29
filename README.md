@@ -75,4 +75,6 @@ real secrets in `.env.local` only, and do not commit them.
 
 The current provider is still mocked. The planned Gemma provider modes and
 safety requirements are documented in
-[docs/gemma-integration-plan.md](docs/gemma-integration-plan.md).
+[docs/gemma-integration-plan.md](docs/gemma-integration-plan.md). Concrete
+future request and response examples are documented in
+[docs/provider-contracts.md](docs/provider-contracts.md).

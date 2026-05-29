@@ -99,6 +99,15 @@
 - [x] Add provider routing coverage to adapter tests
 - [x] Keep live Gemma calls inactive
 
+## Milestone 4D - Provider Contract Examples
+
+- [x] Add OpenAI-compatible hosted provider contract
+- [x] Add custom prompt endpoint contract
+- [x] Add local runtime endpoint contract
+- [x] Document extraction paths for model JSON text
+- [x] Document provider safety rules
+- [x] Link provider contracts from README and Gemma plan
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper

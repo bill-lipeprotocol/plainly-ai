@@ -10,6 +10,8 @@ Plainly currently uses the `mock` provider only. The API route builds the prompt
 - `gemma-hosted`: Future hosted Gemma-compatible endpoint integration.
 - `gemma-local`: Future local Gemma runtime integration.
 
+Detailed request and response examples for future provider modes are documented in [provider-contracts.md](provider-contracts.md).
+
 ## Environment Variables
 
 Use `.env.local` for local secrets. Do not commit `.env.local`.
