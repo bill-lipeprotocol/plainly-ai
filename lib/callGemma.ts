@@ -1,10 +1,16 @@
-export type PlainlyModelInput = {
-  documentType: string;
-  userQuestion?: string;
-  documentText: string;
-};
+import { mockResult } from "./mockResult";
+import type { PlainlyModelInput, PlainlyResult } from "./plainlySchema";
 
-export async function callGemma(input: PlainlyModelInput) {
+export type { PlainlyModelInput } from "./plainlySchema";
+
+export type PlainlyModelProvider = "mock";
+
+export async function callPlainlyModel(
+  input: PlainlyModelInput
+): Promise<PlainlyResult> {
   void input;
-  throw new Error("Gemma integration is not implemented in the mocked MVP.");
+
+  // Milestone 3A is intentionally non-networked. Real Gemma integration
+  // belongs in a later milestone and must not log or store document text.
+  return mockResult;
 }

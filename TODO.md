@@ -38,6 +38,15 @@
 - [x] Add `tests/evaluationChecklist.md`
 - [x] Add 0-2 scoring categories and launch-quality threshold
 
+## Milestone 3A - Mocked Model Wrapper Interface
+
+- [x] Add non-network `callPlainlyModel`
+- [x] Add shared `PlainlyModelInput` type
+- [x] Route `/api/explain` through the mocked model provider
+- [x] Validate model result before returning it
+- [x] Add `.env.local.example` placeholders
+- [x] Document mocked provider status in README
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper

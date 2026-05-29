@@ -4,6 +4,10 @@ export type PlainlyExplainRequest = {
   documentText: string;
 };
 
+export type PlainlyModelInput = PlainlyExplainRequest & {
+  prompt: string;
+};
+
 export type PlainlyResult = {
   plainEnglishSummary: string;
   documentTypeGuess: {

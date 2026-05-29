@@ -37,3 +37,12 @@ Users can:
 ```bash
 npm install
 npm run dev
+```
+
+## Model Provider
+
+Plainly currently uses a mocked local model provider. Real Gemma integration is
+not connected yet.
+
+Copy `.env.local.example` to `.env.local` when local secrets are needed. Keep
+real secrets in `.env.local` only, and do not commit them.

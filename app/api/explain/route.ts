@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { callPlainlyModel } from "@/lib/callGemma";
 import { detectHighRisk } from "@/lib/detectHighRisk";
-import { mockResult } from "@/lib/mockResult";
 import { buildPlainlyPrompt } from "@/lib/plainlyPrompt";
 import {
   validatePlainlyExplainRequest,
@@ -31,9 +31,22 @@ export async function POST(request: Request) {
 
   const input = requestValidation.data;
   const prompt = buildPlainlyPrompt(input);
-  void prompt;
 
-  const resultValidation = validatePlainlyResult(mockResult);
+  let result: unknown;
+
+  try {
+    result = await callPlainlyModel({
+      ...input,
+      prompt,
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Plainly could not explain this document right now." },
+      { status: 500 }
+    );
+  }
+
+  const resultValidation = validatePlainlyResult(result);
 
   if (!resultValidation.success) {
     return NextResponse.json(
