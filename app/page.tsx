@@ -5,7 +5,13 @@ import { useRef, useState } from "react";
 import { DocumentForm } from "@/components/DocumentForm";
 import { LandingHero } from "@/components/LandingHero";
 import { ResultView } from "@/components/ResultView";
-import { detectHighRisk } from "@/lib/detectHighRisk";
+import type { PlainlyResult } from "@/lib/plainlySchema";
+
+type ExplainResponse = {
+  result?: PlainlyResult;
+  showHighRiskAlert?: boolean;
+  error?: string;
+};
 
 export default function Home() {
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -16,6 +22,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasResult, setHasResult] = useState(false);
+  const [result, setResult] = useState<PlainlyResult | null>(null);
   const [showHighRiskAlert, setShowHighRiskAlert] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -23,9 +30,10 @@ export default function Home() {
     formRef.current?.scrollIntoView({ behavior: "smooth" });
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setError("");
     setHasResult(false);
+    setResult(null);
     setFeedback("");
 
     if (!documentType) {
@@ -49,11 +57,42 @@ export default function Home() {
 
     setIsLoading(true);
 
-    window.setTimeout(() => {
-      setShowHighRiskAlert(detectHighRisk(documentText));
+    try {
+      const [response] = await Promise.all([
+        fetch("/api/explain", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            documentType,
+            userQuestion,
+            documentText,
+          }),
+        }),
+        new Promise((resolve) => window.setTimeout(resolve, 800)),
+      ]);
+
+      const data = (await response.json()) as ExplainResponse;
+
+      if (!response.ok || !data.result) {
+        setError(
+          data.error ||
+            "Plainly could not explain this document right now. Please try again."
+        );
+        return;
+      }
+
+      setResult(data.result);
+      setShowHighRiskAlert(Boolean(data.showHighRiskAlert));
       setHasResult(true);
+    } catch {
+      setError(
+        "Plainly could not explain this document right now. Please try again."
+      );
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   }
 
   return (
@@ -76,8 +115,9 @@ export default function Home() {
         onSubmit={handleSubmit}
       />
 
-      {hasResult ? (
+      {hasResult && result ? (
         <ResultView
+          result={result}
           showHighRiskAlert={showHighRiskAlert}
           feedback={feedback}
           onFeedbackChange={setFeedback}

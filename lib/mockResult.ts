@@ -1,4 +1,6 @@
-export const mockResult = {
+import type { PlainlyResult } from "./plainlySchema";
+
+export const mockResult: PlainlyResult = {
   plainEnglishSummary:
     "This appears to be a notice saying your monthly service charge may increase soon. The document mentions a future date and a dollar amount, but the pasted text does not clearly show whether you can opt out.",
   documentTypeGuess: {

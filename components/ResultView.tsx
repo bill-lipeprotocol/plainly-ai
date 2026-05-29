@@ -1,16 +1,18 @@
 import type { ReactNode } from "react";
 
-import { mockResult } from "@/lib/mockResult";
+import type { PlainlyResult } from "@/lib/plainlySchema";
 import { AlertBanner } from "./AlertBanner";
 import { FeedbackButtons } from "./FeedbackButtons";
 
 type ResultViewProps = {
+  result: PlainlyResult;
   showHighRiskAlert: boolean;
   feedback: string;
   onFeedbackChange: (value: string) => void;
 };
 
 export function ResultView({
+  result,
   showHighRiskAlert,
   feedback,
   onFeedbackChange,
@@ -30,18 +32,18 @@ export function ResultView({
         {showHighRiskAlert ? <AlertBanner /> : null}
 
         <ResultSection title="Plain-English Summary">
-          <p>{mockResult.plainEnglishSummary}</p>
+          <p>{result.plainEnglishSummary}</p>
         </ResultSection>
 
         <ResultSection title="Document Type Guess">
-          <p>Type: {mockResult.documentTypeGuess.type}</p>
-          <p>Confidence: {mockResult.documentTypeGuess.confidence}</p>
-          <p>Why: {mockResult.documentTypeGuess.reason}</p>
+          <p>Type: {result.documentTypeGuess.type}</p>
+          <p>Confidence: {result.documentTypeGuess.confidence}</p>
+          <p>Why: {result.documentTypeGuess.reason}</p>
         </ResultSection>
 
         <ResultSection title="Important Dates">
           <ul className="list-disc space-y-2 pl-5">
-            {mockResult.importantDates.map((item) => (
+            {result.importantDates.map((item) => (
               <li key={item.dateText}>
                 <strong>{item.dateText}:</strong> {item.whatItRefersTo}
               </li>
@@ -51,7 +53,7 @@ export function ResultView({
 
         <ResultSection title="Money Mentioned">
           <ul className="list-disc space-y-2 pl-5">
-            {mockResult.moneyMentioned.map((item) => (
+            {result.moneyMentioned.map((item) => (
               <li key={item.amountText}>
                 <strong>{item.amountText}:</strong> {item.whatItRefersTo}
               </li>
@@ -61,7 +63,7 @@ export function ResultView({
 
         <ResultSection title="Possible Action Steps">
           <ul className="list-disc space-y-2 pl-5">
-            {mockResult.possibleActionSteps.map((item) => (
+            {result.possibleActionSteps.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
@@ -69,7 +71,7 @@ export function ResultView({
 
         <ResultSection title="Questions to Ask">
           <ul className="list-disc space-y-2 pl-5">
-            {mockResult.questionsToAskSender.map((item) => (
+            {result.questionsToAskSender.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
@@ -77,14 +79,14 @@ export function ResultView({
 
         <ResultSection title="Unclear or Risky Parts">
           <ul className="list-disc space-y-2 pl-5">
-            {mockResult.unclearOrRiskyParts.map((item) => (
+            {result.unclearOrRiskyParts.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </ResultSection>
 
         <ResultSection title="Important Note">
-          <p>{mockResult.notAdviceNotice}</p>
+          <p>{result.notAdviceNotice}</p>
         </ResultSection>
       </div>
 
