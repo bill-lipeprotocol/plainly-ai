@@ -1,65 +1,131 @@
-import Image from "next/image";
+import type { RefObject } from "react";
 
-export default function Home() {
+const documentTypes = [
+  "Bill",
+  "Notice",
+  "Insurance letter",
+  "Medical bill",
+  "School letter",
+  "Rental or landlord letter",
+  "Government letter",
+  "Other / not sure",
+];
+
+type DocumentFormProps = {
+  formRef: RefObject<HTMLDivElement | null>;
+  documentType: string;
+  userQuestion: string;
+  documentText: string;
+  error: string;
+  isLoading: boolean;
+  onDocumentTypeChange: (value: string) => void;
+  onUserQuestionChange: (value: string) => void;
+  onDocumentTextChange: (value: string) => void;
+  onSubmit: () => void;
+};
+
+export function DocumentForm({
+  formRef,
+  documentType,
+  userQuestion,
+  documentText,
+  error,
+  isLoading,
+  onDocumentTypeChange,
+  onUserQuestionChange,
+  onDocumentTextChange,
+  onSubmit,
+}: DocumentFormProps) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <section ref={formRef} className="mx-auto max-w-3xl px-6 py-10">
+      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8">
+        <h2 className="text-3xl font-bold tracking-tight">
+          Paste your document
+        </h2>
+
+        <p className="mt-3 text-slate-700">
+          Copy and paste the text from your bill, notice, letter, or paperwork
+          below. Plainly will explain what it appears to say in simple English.
+        </p>
+
+        <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+          For this first version, Plainly does not save your document text after
+          generating the explanation.
+        </p>
+
+        <div className="mt-6 space-y-5">
+          <label className="block">
+            <span className="text-sm font-medium">
+              What kind of document is this?
+            </span>
+
+            <select
+              value={documentType}
+              onChange={(event) => onDocumentTypeChange(event.target.value)}
+              className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              <option value="">Choose a document type</option>
+              {documentTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium">
+              What are you trying to understand?
+            </span>
+            <span className="ml-2 text-sm text-slate-500">Optional</span>
+
+            <input
+              value={userQuestion}
+              onChange={(event) => onUserQuestionChange(event.target.value)}
+              placeholder="Example: Do I owe money? Is there a deadline? What should I ask them?"
+              className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium">
+              Paste the document text here
+            </span>
+
+            <textarea
+              value={documentText}
+              onChange={(event) => onDocumentTextChange(event.target.value)}
+              placeholder={
+                "Paste the text from your bill, notice, letter, or paperwork here.\n\nTip: You can remove names, account numbers, addresses, or other personal details before submitting."
+              }
+              rows={10}
+              className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900"
+            />
+          </label>
+
+          {error ? (
+            <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isLoading}
+            className="w-full rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Documentation
-          </a>
+            {isLoading ? "Reading your document..." : "Explain it plainly"}
+          </button>
+
+          {isLoading ? (
+            <p className="text-center text-sm text-slate-600">
+              Plainly is looking for the summary, dates, money, possible next
+              steps, and unclear parts.
+            </p>
+          ) : null}
         </div>
-      </main>
-    </div>
+      </div>
+    </section>
   );
 }
