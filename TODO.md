@@ -1,35 +1,44 @@
-
----
-
-# `TODO.md`
-
-Add this too:
-
-```md
 # Plainly.ai TODO
 
-## Milestone 1 — Mocked Front-End MVP
+## Milestone 1 - Mocked Front-End MVP
 
-- [ ] Replace default `app/page.tsx`
-- [ ] Add `LandingHero`
-- [ ] Add `DocumentForm`
-- [ ] Add `ResultView`
-- [ ] Add `FeedbackButtons`
-- [ ] Add `AlertBanner`
-- [ ] Add `mockResult`
-- [ ] Add `detectHighRisk`
-- [ ] Add validation for short and long pasted text
-- [ ] Test locally with `npm run dev`
+- [x] Replace default `app/page.tsx`
+- [x] Add `LandingHero`
+- [x] Add `DocumentForm`
+- [x] Add `ResultView`
+- [x] Add `FeedbackButtons`
+- [x] Add `AlertBanner`
+- [x] Add `mockResult`
+- [x] Add `detectHighRisk`
+- [x] Add validation for short and long pasted text
+- [x] Test locally with `npm run dev`
 
-## Milestone 2 — Prompt and API Preparation
+## Milestone 2A - Mocked API Layer
 
-- [ ] Add `lib/plainlyPrompt.ts`
-- [ ] Add `lib/plainlySchema.ts`
-- [ ] Add placeholder `app/api/explain/route.ts`
-- [ ] Add Zod schema validation
-- [ ] Keep model call mocked
+- [x] Add `app/api/explain/route.ts`
+- [x] Accept `documentType`, `userQuestion`, and `documentText`
+- [x] Validate required document type and document text length
+- [x] Return `mockResult` and `showHighRiskAlert`
+- [x] Keep model call mocked
 
-## Milestone 3 — Real Model Integration
+## Milestone 2B - Shared Schemas and Prompt Contract
+
+- [x] Add `lib/plainlyPrompt.ts`
+- [x] Add `lib/plainlySchema.ts`
+- [x] Add shared request validation
+- [x] Add shared result validation
+- [x] Build but do not send the prompt
+- [x] Keep model call mocked
+
+## Milestone 2C - Synthetic Samples and Manual Evaluation
+
+- [x] Add `tests/plainlySamples.ts`
+- [x] Add 12 fully synthetic sample documents
+- [x] Include ordinary and high-risk document examples
+- [x] Add `tests/evaluationChecklist.md`
+- [x] Add 0-2 scoring categories and launch-quality threshold
+
+## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper
 - [ ] Add `.env.local.example`
@@ -37,7 +46,7 @@ Add this too:
 - [ ] Add JSON validation and fallback error message
 - [ ] Add rate limiting
 
-## Milestone 4 — Launch Prep
+## Milestone 4 - Launch Prep
 
 - [ ] Update README
 - [ ] Add privacy note
