@@ -49,6 +49,15 @@ npm run test:api
 The API test posts synthetic samples to local `/api/explain` and reports
 pass/fail status without printing full document text or prompts.
 
+To run the mocked Gemma adapter parsing checks:
+
+```bash
+npm run test:adapter
+```
+
+The adapter test checks valid JSON, invalid JSON, and schema-invalid JSON
+without printing document text, prompts, or raw model responses.
+
 ## Model Provider
 
 Plainly currently uses a mocked local model provider. Real Gemma integration is

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:api": "node --no-warnings --experimental-strip-types scripts/testPlainlyApi.ts"
+    "test:api": "node --no-warnings --experimental-strip-types scripts/testPlainlyApi.ts",
+    "test:adapter": "node --no-warnings --experimental-strip-types scripts/testGemmaAdapter.ts"
   },
   "dependencies": {
     "next": "16.2.6",

@@ -81,6 +81,15 @@
 - [x] Document timeout, JSON validation, and fallback expectations
 - [x] Keep live model calls inactive
 
+## Milestone 4B - Gemma Adapter Scaffolding
+
+- [x] Add `lib/gemmaAdapter.ts`
+- [x] Add mocked hosted Gemma adapter path
+- [x] Parse raw model-like JSON strings
+- [x] Validate adapter output with `validatePlainlyResult`
+- [x] Add adapter parsing test script
+- [x] Keep adapter disconnected from production `/api/explain`
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper
