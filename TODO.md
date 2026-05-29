@@ -56,6 +56,13 @@
 - [x] Throw unsupported-provider error for unknown values
 - [x] Keep Gemma URL and key placeholders unused
 
+## Milestone 3C - Safe Model/API Failure Handling
+
+- [x] Preserve 400 validation-style error messages
+- [x] Show a safe generic message for 500 and unexpected API errors
+- [x] Avoid exposing raw provider or server error details
+- [x] Preserve loading, success, high-risk alert, and feedback behavior
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper

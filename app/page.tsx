@@ -13,6 +13,9 @@ type ExplainResponse = {
   error?: string;
 };
 
+const SAFE_EXPLAIN_ERROR =
+  "Plainly had trouble generating the explanation. Please try again with a shorter section of text.";
+
 export default function Home() {
   const formRef = useRef<HTMLDivElement | null>(null);
 
@@ -73,13 +76,23 @@ export default function Home() {
         new Promise((resolve) => window.setTimeout(resolve, 800)),
       ]);
 
-      const data = (await response.json()) as ExplainResponse;
+      let data: ExplainResponse = {};
 
-      if (!response.ok || !data.result) {
+      try {
+        data = (await response.json()) as ExplainResponse;
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
         setError(
-          data.error ||
-            "Plainly could not explain this document right now. Please try again."
+          response.status === 400 && data.error ? data.error : SAFE_EXPLAIN_ERROR
         );
+        return;
+      }
+
+      if (!data.result) {
+        setError(SAFE_EXPLAIN_ERROR);
         return;
       }
 
@@ -87,9 +100,7 @@ export default function Home() {
       setShowHighRiskAlert(Boolean(data.showHighRiskAlert));
       setHasResult(true);
     } catch {
-      setError(
-        "Plainly could not explain this document right now. Please try again."
-      );
+      setError(SAFE_EXPLAIN_ERROR);
     } finally {
       setIsLoading(false);
     }
