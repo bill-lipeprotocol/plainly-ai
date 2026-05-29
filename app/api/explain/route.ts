@@ -2,18 +2,17 @@ import { NextResponse } from "next/server";
 
 import { detectHighRisk } from "@/lib/detectHighRisk";
 import { mockResult } from "@/lib/mockResult";
-
-type ExplainRequestBody = {
-  documentType?: unknown;
-  userQuestion?: unknown;
-  documentText?: unknown;
-};
+import { buildPlainlyPrompt } from "@/lib/plainlyPrompt";
+import {
+  validatePlainlyExplainRequest,
+  validatePlainlyResult,
+} from "@/lib/plainlySchema";
 
 export async function POST(request: Request) {
-  let body: ExplainRequestBody;
+  let body: unknown;
 
   try {
-    body = (await request.json()) as ExplainRequestBody;
+    body = await request.json();
   } catch {
     return NextResponse.json(
       { error: "Please send valid document text for Plainly to explain." },
@@ -21,40 +20,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const documentType =
-    typeof body.documentType === "string" ? body.documentType : "";
-  const documentText =
-    typeof body.documentText === "string" ? body.documentText : "";
+  const requestValidation = validatePlainlyExplainRequest(body);
 
-  if (!documentType.trim()) {
+  if (!requestValidation.success) {
     return NextResponse.json(
-      { error: 'Please choose a document type, or select "Other / not sure."' },
+      { error: requestValidation.error },
       { status: 400 }
     );
   }
 
-  if (documentText.trim().length < 100) {
-    return NextResponse.json(
-      {
-        error:
-          "Please paste more of the document so Plainly has enough context to explain it.",
-      },
-      { status: 400 }
-    );
-  }
+  const input = requestValidation.data;
+  const prompt = buildPlainlyPrompt(input);
+  void prompt;
 
-  if (documentText.length > 12000) {
+  const resultValidation = validatePlainlyResult(mockResult);
+
+  if (!resultValidation.success) {
     return NextResponse.json(
-      {
-        error:
-          "This document is too long for the first version. Please paste the most important section, such as the first page, summary, charges, or deadline notice.",
-      },
-      { status: 400 }
+      { error: resultValidation.error },
+      { status: 500 }
     );
   }
 
   return NextResponse.json({
-    result: mockResult,
-    showHighRiskAlert: detectHighRisk(documentText),
+    result: resultValidation.data,
+    showHighRiskAlert: detectHighRisk(input.documentText),
   });
 }
