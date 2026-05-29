@@ -1,0 +1,10 @@
+
+> plainly-ai@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.160:3000
+✓ Ready in 305ms
+
+ POST /api/explain 200 in 113ms (next.js: 96ms, application-code: 18ms)

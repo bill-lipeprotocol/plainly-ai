@@ -47,6 +47,15 @@
 - [x] Add `.env.local.example` placeholders
 - [x] Document mocked provider status in README
 
+## Milestone 3B - Mocked Provider Routing
+
+- [x] Route `callPlainlyModel` by `PLAINLY_MODEL_PROVIDER`
+- [x] Default missing provider to `mock`
+- [x] Return `mockResult` for `mock`
+- [x] Throw not-implemented error for `gemma`
+- [x] Throw unsupported-provider error for unknown values
+- [x] Keep Gemma URL and key placeholders unused
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper
