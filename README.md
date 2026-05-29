@@ -60,3 +60,9 @@ milestone and currently returns a not-implemented error.
 
 Copy `.env.local.example` to `.env.local` when local secrets are needed. Keep
 real secrets in `.env.local` only, and do not commit them.
+
+## Model Provider Status
+
+The current provider is still mocked. The planned Gemma provider modes and
+safety requirements are documented in
+[docs/gemma-integration-plan.md](docs/gemma-integration-plan.md).

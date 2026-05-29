@@ -3,7 +3,7 @@ import type { PlainlyModelInput, PlainlyResult } from "./plainlySchema";
 
 export type { PlainlyModelInput } from "./plainlySchema";
 
-export type PlainlyModelProvider = "mock" | "gemma";
+export type PlainlyModelProvider = "mock" | "gemma-hosted" | "gemma-local";
 
 export async function callPlainlyModel(
   input: PlainlyModelInput
@@ -16,9 +16,15 @@ export async function callPlainlyModel(
     return mockResult;
   }
 
-  if (provider === "gemma") {
-    // Milestone 3B only routes providers. Real Gemma integration belongs in
-    // the next milestone and must not log or store document text or prompts.
+  if (provider === "gemma" || provider === "gemma-hosted") {
+    // Future provider: call a hosted Gemma-compatible endpoint with timeouts,
+    // JSON validation, and no document text or prompt logging.
+    throw new Error("Gemma provider is not implemented yet.");
+  }
+
+  if (provider === "gemma-local") {
+    // Future provider: call a local Gemma runtime with the same validation and
+    // no-logging rules. No local model connection is active in this milestone.
     throw new Error("Gemma provider is not implemented yet.");
   }
 

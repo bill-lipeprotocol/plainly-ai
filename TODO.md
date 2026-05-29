@@ -72,6 +72,15 @@
 - [x] Avoid printing full document text or prompts
 - [x] Add `npm run test:api`
 
+## Milestone 4A - Gemma Integration Contract and Documentation
+
+- [x] Add Gemma environment placeholders
+- [x] Document future provider modes: `mock`, `gemma-hosted`, `gemma-local`
+- [x] Add Gemma integration plan
+- [x] Document no raw document or prompt logging rule
+- [x] Document timeout, JSON validation, and fallback expectations
+- [x] Keep live model calls inactive
+
 ## Milestone 3 - Real Model Integration
 
 - [ ] Add hosted Gemma endpoint wrapper
