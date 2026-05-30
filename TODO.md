@@ -108,7 +108,7 @@
 - [x] Document provider safety rules
 - [x] Link provider contracts from README and Gemma plan
 
-## Milestone 3 - Real Model Integration
+## Milestone 3 - Real Model Integration`n- [x] 5A: Document OpenAI-compatible provider check
 
 - [ ] Add hosted Gemma endpoint wrapper
 - [ ] Add `.env.local.example`
@@ -123,4 +123,5 @@
 - [ ] Add feedback capture
 - [ ] Add early access form
 - [ ] Deploy to Vercel
+
 
