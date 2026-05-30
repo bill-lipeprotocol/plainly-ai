@@ -30,7 +30,10 @@ Users can:
 ## MVP Status
 
 - Default provider: mock.
+- Public MVP demo: https://plainly-ai.vercel.app
+- Hosted deployment mode: mock/default.
 - Live provider: opt-in with `PLAINLY_MODEL_PROVIDER=gemma-hosted-openai-compatible`.
+- Hosted live Gemma is not enabled. Local live Gemma verification remains available behind environment flags.
 - No uploads, accounts, payments, analytics, database, document storage, or document history.
 - Do not commit `.env.local` or secrets.
 
@@ -45,8 +48,23 @@ npm run test:adapter
 
 Operational docs:
 
+- [MVP v1 launch note](docs/mvp-v1-launch-note.md)
+- [Deployment smoke test](docs/deployment-smoke-test.md)
 - [MVP launch-readiness runbook](docs/mvp-launch-readiness-runbook.md)
 - [Deployment prep checklist](docs/deployment-prep-checklist.md)
+
+## Public MVP Demo
+
+The public MVP demo is available at https://plainly-ai.vercel.app.
+
+The hosted deployment runs in mock/default mode. Explanation cards in the hosted
+demo are sample output, while high-risk detection runs on the pasted text. Hosted
+live Gemma is not enabled because the local Ollama URL used for development is
+not suitable for hosted deployment.
+
+See [docs/mvp-v1-launch-note.md](docs/mvp-v1-launch-note.md) for the public
+launch note and [docs/deployment-smoke-test.md](docs/deployment-smoke-test.md)
+for the production smoke test.
 
 ## Tech Stack
 

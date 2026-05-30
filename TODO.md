@@ -134,6 +134,7 @@
 - [x] 7A: Add MVP launch-readiness operating runbook
 - [x] Launch Build 1: Add deployment prep checklist, README MVP status, and truthful metadata
 - [x] Launch Build 2: Polish public MVP page, CTA, and synthetic sample flow
+- [x] Launch Build 4: Add public MVP launch note and README deployment status
 
 ## Launch Track - Remaining
 
@@ -142,6 +143,10 @@
 - [ ] Manual live-provider rehearsal only if intentionally needed
 - [ ] Final no-secrets audit before any deployment work
 - [ ] Deployment plan and hosting decision
+- [ ] Hosted live-provider evaluation
+- [ ] Production error monitoring plan, docs-only first
+- [ ] Domain and branding polish
+- [ ] User feedback collection plan without storing documents
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
