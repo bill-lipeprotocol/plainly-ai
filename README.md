@@ -49,6 +49,10 @@ npm run test:api
 The API test posts synthetic samples to local `/api/explain` and reports
 pass/fail status without printing full document text or prompts.
 
+For the full local launch-readiness checklist, including mock mode, live Gemma
+mode, rollback, and go/no-go steps, see
+[docs/mvp-launch-readiness-runbook.md](docs/mvp-launch-readiness-runbook.md).
+
 To run the mocked Gemma adapter parsing checks:
 
 ```bash
