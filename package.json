@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test:api": "node --no-warnings --experimental-strip-types scripts/testPlainlyApi.ts",
     "test:adapter": "node --no-warnings --experimental-strip-types scripts/testGemmaAdapter.ts",
-    "test:gemma:live": "node --no-warnings --experimental-strip-types scripts/testOpenAiCompatibleGemma.ts"
+    "test:gemma:live": "node --no-warnings --experimental-strip-types scripts/testOpenAiCompatibleGemma.ts",
+    "test:api:live": "node --no-warnings --experimental-strip-types scripts/testLivePlainlyApi.ts"
   },
   "dependencies": {
     "next": "16.2.6",

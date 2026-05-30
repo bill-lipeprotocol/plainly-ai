@@ -99,6 +99,30 @@ npm run test:gemma:live
 
 This isolated test does not change normal app behavior.
 
+### Manual Live API Testing
+
+To test the full `/api/explain` route with the live OpenAI-compatible provider,
+start the dev server with live provider environment in one PowerShell terminal:
+
+```powershell
+$env:PLAINLY_MODEL_PROVIDER="gemma-hosted-openai-compatible"
+$env:GEMMA_API_URL="http://localhost:11434/v1/chat/completions"
+$env:GEMMA_MODEL_NAME="gemma4:31b-cloud"
+Remove-Item Env:GEMMA_API_KEY -ErrorAction SilentlyContinue
+npm run dev
+```
+
+Then run the live API regression from a second PowerShell terminal:
+
+```powershell
+npm run test:api:live
+```
+
+The live API regression posts synthetic low-risk and high-risk examples to
+`/api/explain`, reports safe PASS/FAIL categories, and does not print document
+text, prompts, response bodies, headers, or secrets. Set `PLAINLY_API_URL` only
+if the dev server is not using the default `http://localhost:3000/api/explain`.
+
 The default provider is still mocked. Additional Gemma provider plans and safety
 requirements are documented in
 [docs/gemma-integration-plan.md](docs/gemma-integration-plan.md). Concrete

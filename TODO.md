@@ -115,6 +115,7 @@
 - [x] 5C: Add isolated OpenAI-compatible Gemma adapter and live test
 - [x] 5D: Tighten isolated live test prompt and diagnostics
 - [x] 5E: Wire OpenAI-compatible Gemma routing behind environment flag
+- [x] 5F: Add safe live API regression script for `/api/explain`
 
 - [ ] Add hosted Gemma endpoint wrapper
 - [ ] Add `.env.local.example`
