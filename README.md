@@ -54,6 +54,7 @@ Operational docs:
 - [Deployment prep checklist](docs/deployment-prep-checklist.md)
 - [Domain and branding plan](docs/domain-and-branding-plan.md)
 - [Feedback collection plan](docs/feedback-collection-plan.md)
+- [Production error monitoring plan](docs/production-error-monitoring-plan.md)
 
 ## Public MVP Demo
 
