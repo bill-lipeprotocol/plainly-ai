@@ -7,6 +7,9 @@ import {
 
 export type GemmaAdapterInput = PlainlyModelInput;
 
+const TRANSIENT_PROVIDER_STATUSES = new Set([429, 500, 502, 503, 504]);
+const OPENAI_COMPATIBLE_RETRY_DELAY_MS = 750;
+
 const OPENAI_COMPATIBLE_JSON_CONTRACT = `
 You are Plainly, a plain-English document explainer for everyday household paperwork.
 
@@ -102,22 +105,11 @@ export async function callOpenAiCompatibleGemma(
   const prompt = buildOpenAiCompatibleGemmaPrompt(input.prompt);
 
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(apiKey ? { "Authorization": `Bearer ${apiKey}` } : {}),
-      },
-      body: JSON.stringify({
-        model: modelName,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: 0.1,
-      }),
+    const response = await fetchOpenAiCompatibleGemmaResponse({
+      apiUrl,
+      apiKey,
+      modelName,
+      prompt,
       signal: controller.signal,
     });
 
@@ -146,6 +138,60 @@ export async function callOpenAiCompatibleGemma(
   } finally {
     clearTimeout(timeoutId);
   }
+}
+
+async function fetchOpenAiCompatibleGemmaResponse({
+  apiUrl,
+  apiKey,
+  modelName,
+  prompt,
+  signal,
+}: {
+  apiUrl: string;
+  apiKey: string | undefined;
+  modelName: string;
+  prompt: string;
+  signal: AbortSignal;
+}): Promise<Response> {
+  const maxAttempts = 2;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(apiKey ? { "Authorization": `Bearer ${apiKey}` } : {}),
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.1,
+      }),
+      signal,
+    });
+
+    const shouldRetry =
+      attempt < maxAttempts && TRANSIENT_PROVIDER_STATUSES.has(response.status);
+
+    if (!shouldRetry) {
+      return response;
+    }
+
+    await delay(OPENAI_COMPATIBLE_RETRY_DELAY_MS);
+  }
+
+  throw new Error("Provider request failed before a response was available.");
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 export async function callGemmaHostedMock(
