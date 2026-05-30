@@ -116,10 +116,11 @@
 - [ ] Add JSON validation and fallback error message
 - [ ] Add rate limiting
 
-## Milestone 4 - Launch Prep
+## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
 - [ ] Update README
 - [ ] Add privacy note
 - [ ] Add feedback capture
 - [ ] Add early access form
 - [ ] Deploy to Vercel
+
