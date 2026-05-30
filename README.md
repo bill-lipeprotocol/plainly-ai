@@ -56,6 +56,7 @@ Operational docs:
 - [Feedback collection plan](docs/feedback-collection-plan.md)
 - [Production error monitoring plan](docs/production-error-monitoring-plan.md)
 - [Hosted live-provider evaluation plan](docs/hosted-live-provider-evaluation.md)
+- [Hosted live-provider POC plan](docs/hosted-live-provider-poc-plan.md)
 
 ## Public MVP Demo
 
@@ -65,6 +66,11 @@ The hosted deployment runs in mock/default mode. Explanation cards in the hosted
 demo are sample output, while high-risk detection runs on the pasted text. Hosted
 live Gemma is not enabled because the local Ollama URL used for development is
 not suitable for hosted deployment.
+
+Hosted live-provider proof-of-concept work is local and gated only. The
+production hosted deployment remains mock/default until a provider passes the
+documented POC, preview testing, privacy review, cost review, and an operator
+intentionally enables live mode later.
 
 See [docs/mvp-v1-launch-note.md](docs/mvp-v1-launch-note.md) for the public
 launch note and [docs/deployment-smoke-test.md](docs/deployment-smoke-test.md)

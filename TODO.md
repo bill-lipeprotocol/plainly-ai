@@ -138,6 +138,7 @@
 - [x] Launch Build 5: Add domain/branding plan and privacy-safe feedback plan
 - [x] Launch Build 6: Add production error monitoring plan, docs-only first
 - [x] Launch Build 7: Add hosted live-provider evaluation plan
+- [x] Launch Build 8: Add hosted live-provider POC plan and gated test path
 
 ## Launch Track - Remaining
 
@@ -149,7 +150,11 @@
 - [ ] Custom domain setup
 - [ ] Public feedback channel implementation only after privacy plan
 - [ ] Monitoring tool evaluation only after docs plan
-- [ ] Hosted live-provider proof-of-concept only after evaluation criteria are met
+- [ ] Select candidate hosted provider
+- [ ] Run local hosted-provider POC
+- [ ] Review provider data-retention, cost, and rate limits
+- [ ] Preview-deployment live test only after local POC passes
+- [ ] Production live activation only after preview passes
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
