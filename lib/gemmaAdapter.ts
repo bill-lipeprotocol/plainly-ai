@@ -8,10 +8,19 @@ import {
 export type GemmaAdapterInput = PlainlyModelInput;
 
 export function parseGemmaJsonResponse(rawText: string): PlainlyResult {
+  let cleanedText = rawText.trim();
+
+  // Remove Markdown JSON fences if present
+  if (cleanedText.startsWith("```json") && cleanedText.endsWith("```")) {
+    cleanedText = cleanedText.slice(7, -3).trim();
+  } else if (cleanedText.startsWith("```") && cleanedText.endsWith("```")) {
+    cleanedText = cleanedText.slice(3, -3).trim();
+  }
+
   let parsed: unknown;
 
   try {
-    parsed = JSON.parse(rawText);
+    parsed = JSON.parse(cleanedText);
   } catch {
     throw new Error("Gemma response was not valid JSON.");
   }

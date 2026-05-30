@@ -27,11 +27,37 @@ const modelInput = {
     "Synthetic adapter test prompt that is passed through mocked provider routing but is not printed by this test script.",
 };
 
+// --- Parser Hardening Tests ---
+
 try {
   const result = parseGemmaJsonResponse(JSON.stringify(mockResult));
-  record("valid JSON parses successfully", Boolean(result.plainEnglishSummary));
+  record("raw JSON parses successfully", Boolean(result.plainEnglishSummary));
 } catch {
-  record("valid JSON parses successfully", false);
+  record("raw JSON parses successfully", false);
+}
+
+try {
+  const fencedJson = "```json\n" + JSON.stringify(mockResult) + "\n```";
+  const result = parseGemmaJsonResponse(fencedJson);
+  record("fenced ```json parses successfully", Boolean(result.plainEnglishSummary));
+} catch {
+  record("fenced ```json parses successfully", false);
+}
+
+try {
+  const fencedPlain = "```\n" + JSON.stringify(mockResult) + "\n```";
+  const result = parseGemmaJsonResponse(fencedPlain);
+  record("fenced plain ``` parses successfully", Boolean(result.plainEnglishSummary));
+} catch {
+  record("fenced plain ``` parses successfully", false);
+}
+
+try {
+  const whitespaceJson = "  \n" + JSON.stringify(mockResult) + "  \t ";
+  const result = parseGemmaJsonResponse(whitespaceJson);
+  record("whitespace around JSON parses successfully", Boolean(result.plainEnglishSummary));
+} catch {
+  record("whitespace around JSON parses successfully", false);
 }
 
 try {
@@ -60,8 +86,20 @@ try {
 }
 
 try {
-  const result = await callGemmaHostedMock(modelInput);
+  const proseAroundJson = "Here is the result: \n```json\n" + JSON.stringify(mockResult) + "\n```\nHope this helps!";
+  parseGemmaJsonResponse(proseAroundJson);
+  record("prose around JSON still fails safely", false);
+} catch (error) {
+  record(
+    "prose around JSON still fails safely",
+    error instanceof Error && error.message === "Gemma response was not valid JSON."
+  );
+}
 
+// --- Integration Mock Tests ---
+
+try {
+  const result = await callGemmaHostedMock(modelInput);
   record("hosted mock returns a valid Plainly result", Boolean(result.notAdviceNotice));
 } catch {
   record("hosted mock returns a valid Plainly result", false);
