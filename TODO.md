@@ -141,6 +141,7 @@
 - [x] Launch Build 8: Add hosted live-provider POC plan and gated test path
 - [x] Launch Build 9: Select hosted provider candidate and local POC checklist
 - [x] Launch Build 10: Record local-only hosted Gemini provider POC result
+- [x] Launch Build 11: Add preview live-provider test plan
 
 ## Launch Track - Remaining
 
@@ -155,7 +156,8 @@
 - [ ] Obtain candidate provider key outside repo
 - [ ] Run local hosted-provider POC
 - [ ] Review Gemini provider cost/rate limits and data retention
-- [ ] Preview-deployment live-provider test plan
+- [ ] Run preview live-provider test only after secrets/privacy/logging checks are ready
+- [ ] Document preview live-provider pass/fail result
 - [ ] Production live-provider activation decision
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
