@@ -16,6 +16,13 @@ type ExplainResponse = {
 const SAFE_EXPLAIN_ERROR =
   "Plainly could not prepare an explanation right now. Try a shorter section, remove unusual formatting, or try again in a moment.";
 
+const SAMPLE_NOTICE = {
+  documentType: "Notice",
+  userQuestion: "What is changing, and is there a deadline?",
+  documentText:
+    "Synthetic sample notice for Plainly demo use. This household service notice says the monthly service plan will change on June 1, 2026. The base charge will increase by $15 per month after that date. The notice says the current balance is not due today and asks the customer to review plan options before the next billing cycle. It does not include any real name, address, account number, or personal information.",
+};
+
 export default function Home() {
   const formRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,6 +38,17 @@ export default function Home() {
 
   function scrollToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function useSampleNotice() {
+    setDocumentType(SAMPLE_NOTICE.documentType);
+    setUserQuestion(SAMPLE_NOTICE.userQuestion);
+    setDocumentText(SAMPLE_NOTICE.documentText);
+    setError("");
+    setHasResult(false);
+    setResult(null);
+    setFeedback("");
+    scrollToForm();
   }
 
   async function handleSubmit() {
@@ -110,7 +128,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-100 text-slate-950">
       <LandingHero
         onPrimaryClick={scrollToForm}
-        onSecondaryClick={scrollToForm}
+        onSecondaryClick={useSampleNotice}
       />
 
       <DocumentForm
@@ -123,6 +141,7 @@ export default function Home() {
         onDocumentTypeChange={setDocumentType}
         onUserQuestionChange={setUserQuestion}
         onDocumentTextChange={setDocumentText}
+        onUseSample={useSampleNotice}
         onSubmit={handleSubmit}
       />
 
@@ -134,6 +153,13 @@ export default function Home() {
           onFeedbackChange={setFeedback}
         />
       ) : null}
+
+      <footer className="mx-auto max-w-3xl px-6 py-10 text-center text-sm leading-6 text-slate-600">
+        <p>
+          Plainly explains pasted text in simple English. It is not professional
+          advice. Remove sensitive details before pasting.
+        </p>
+      </footer>
     </main>
   );
 }

@@ -10,6 +10,7 @@ and live Gemma routing is opt-in only for local verification.
 Users can:
 
 - select a document type
+- try a fully synthetic sample notice
 - paste document text
 - optionally ask what they are trying to understand
 - receive a mocked structured explanation

@@ -133,6 +133,7 @@
 
 - [x] 7A: Add MVP launch-readiness operating runbook
 - [x] Launch Build 1: Add deployment prep checklist, README MVP status, and truthful metadata
+- [x] Launch Build 2: Polish public MVP page, CTA, and synthetic sample flow
 
 ## Launch Track - Remaining
 
