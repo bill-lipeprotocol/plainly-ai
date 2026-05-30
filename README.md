@@ -58,6 +58,7 @@ Operational docs:
 - [Hosted live-provider evaluation plan](docs/hosted-live-provider-evaluation.md)
 - [Hosted live-provider POC plan](docs/hosted-live-provider-poc-plan.md)
 - [Hosted provider candidate selection](docs/hosted-provider-candidate-selection.md)
+- [Hosted provider POC result](docs/hosted-provider-poc-result.md)
 
 ## Public MVP Demo
 
@@ -72,6 +73,10 @@ Hosted live-provider proof-of-concept work is local and gated only. The
 production hosted deployment remains mock/default until a provider passes the
 documented POC, preview testing, privacy review, cost review, and an operator
 intentionally enables live mode later.
+
+The local-only Gemini OpenAI-compatible provider POC passed on 2026-05-30.
+Production remains mock/default; no Vercel live-provider environment variables
+are set.
 
 See [docs/mvp-v1-launch-note.md](docs/mvp-v1-launch-note.md) for the public
 launch note and [docs/deployment-smoke-test.md](docs/deployment-smoke-test.md)
