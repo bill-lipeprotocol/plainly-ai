@@ -108,7 +108,13 @@
 - [x] Document provider safety rules
 - [x] Link provider contracts from README and Gemma plan
 
-## Milestone 3 - Real Model Integration`n- [x] 5A: Document OpenAI-compatible provider check`n- [x] 5B: Harden parseGemmaJsonResponse for fenced JSON`n- [x] 5C: Add isolated OpenAI-compatible Gemma adapter and live test`n- [x] 5A: Document OpenAI-compatible provider check
+## Milestone 5 - Live Gemma Integration
+
+- [x] 5A: Document OpenAI-compatible provider check
+- [x] 5B: Harden parseGemmaJsonResponse for fenced JSON
+- [x] 5C: Add isolated OpenAI-compatible Gemma adapter and live test
+- [x] 5D: Tighten isolated live test prompt and diagnostics
+- [x] 5E: Wire OpenAI-compatible Gemma routing behind environment flag
 
 - [ ] Add hosted Gemma endpoint wrapper
 - [ ] Add `.env.local.example`

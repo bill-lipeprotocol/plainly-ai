@@ -1,5 +1,9 @@
 import { callPlainlyModel } from "../lib/callGemma.ts";
-import { callGemmaHostedMock, parseGemmaJsonResponse } from "../lib/gemmaAdapter.ts";
+import {
+  buildOpenAiCompatibleGemmaPrompt,
+  callGemmaHostedMock,
+  parseGemmaJsonResponse,
+} from "../lib/gemmaAdapter.ts";
 import { mockResult } from "../lib/mockResult.ts";
 
 type AdapterCheck = {
@@ -28,6 +32,35 @@ const modelInput = {
 };
 
 // --- Parser Hardening Tests ---
+
+try {
+  const livePrompt = buildOpenAiCompatibleGemmaPrompt(modelInput.prompt);
+  record(
+    "OpenAI-compatible prompt keeps original model prompt before JSON contract",
+    livePrompt.includes(modelInput.prompt) &&
+      livePrompt.indexOf(modelInput.prompt) <
+        livePrompt.indexOf("Return valid JSON only.")
+  );
+} catch {
+  record(
+    "OpenAI-compatible prompt keeps original model prompt before JSON contract",
+    false
+  );
+}
+
+try {
+  const livePrompt = buildOpenAiCompatibleGemmaPrompt(modelInput.prompt);
+  const hasJsonOnlyContract =
+    livePrompt.includes("Return valid JSON only.") &&
+    livePrompt.includes("Do not return Markdown.") &&
+    livePrompt.includes("Do not return prose before or after the JSON.") &&
+    livePrompt.includes("Do not wrap the JSON in code fences.") &&
+    livePrompt.includes("Do not include comments.") &&
+    livePrompt.includes("PlainlyResult shape");
+  record("OpenAI-compatible prompt includes strict JSON contract", hasJsonOnlyContract);
+} catch {
+  record("OpenAI-compatible prompt includes strict JSON contract", false);
+}
 
 try {
   const result = parseGemmaJsonResponse(JSON.stringify(mockResult));
@@ -113,12 +146,58 @@ try {
 }
 
 try {
+  const result = await withModelProvider(undefined, () => callPlainlyModel(modelInput));
+  record("missing provider returns mock result", Boolean(result.plainEnglishSummary));
+} catch {
+  record("missing provider returns mock result", false);
+}
+
+try {
   const result = await withModelProvider("gemma-hosted", () =>
     callPlainlyModel(modelInput)
   );
   record("gemma-hosted provider returns mocked adapter result", Boolean(result));
 } catch {
   record("gemma-hosted provider returns mocked adapter result", false);
+}
+
+try {
+  await withModelProvider("gemma-hosted-openai-compatible", () =>
+    withoutGemmaLiveEnv(() => callPlainlyModel(modelInput))
+  );
+  record("gemma-hosted-openai-compatible fails safely without URL", false);
+} catch (error) {
+  record(
+    "gemma-hosted-openai-compatible fails safely without URL",
+    error instanceof Error &&
+      error.message === "GEMMA_API_URL is required for live adapter calls."
+  );
+}
+
+try {
+  await withModelProvider("gemma-hosted-openai-compatible", () =>
+    withoutGemmaModelName(() => callPlainlyModel(modelInput))
+  );
+  record("gemma-hosted-openai-compatible fails safely without model", false);
+} catch (error) {
+  record(
+    "gemma-hosted-openai-compatible fails safely without model",
+    error instanceof Error &&
+      error.message === "GEMMA_MODEL_NAME is required for live adapter calls."
+  );
+}
+
+try {
+  await withModelProvider("gemma-hosted-custom-prompt", () =>
+    callPlainlyModel(modelInput)
+  );
+  record("gemma-hosted-custom-prompt provider fails safely", false);
+} catch (error) {
+  record(
+    "gemma-hosted-custom-prompt provider fails safely",
+    error instanceof Error &&
+      error.message === "Gemma hosted custom-prompt provider is not implemented yet."
+  );
 }
 
 try {
@@ -129,6 +208,18 @@ try {
     "gemma-local provider fails safely",
     error instanceof Error &&
       error.message === "Gemma local provider is not implemented yet."
+  );
+}
+
+try {
+  await withModelProvider("gemma", () => callPlainlyModel(modelInput));
+  record("legacy gemma provider fails safely", false);
+} catch (error) {
+  record(
+    "legacy gemma provider fails safely",
+    error instanceof Error &&
+      error.message ===
+        "Legacy Gemma provider is not implemented. Use a specific Plainly model provider."
   );
 }
 
@@ -156,11 +247,15 @@ if (failed > 0) {
 }
 
 async function withModelProvider<T>(
-  provider: string,
+  provider: string | undefined,
   callback: () => Promise<T>
 ): Promise<T> {
   const previousProvider = process.env.PLAINLY_MODEL_PROVIDER;
-  process.env.PLAINLY_MODEL_PROVIDER = provider;
+  if (typeof provider === "undefined") {
+    delete process.env.PLAINLY_MODEL_PROVIDER;
+  } else {
+    process.env.PLAINLY_MODEL_PROVIDER = provider;
+  }
 
   try {
     return await callback();
@@ -169,6 +264,54 @@ async function withModelProvider<T>(
       delete process.env.PLAINLY_MODEL_PROVIDER;
     } else {
       process.env.PLAINLY_MODEL_PROVIDER = previousProvider;
+    }
+  }
+}
+
+async function withoutGemmaLiveEnv<T>(callback: () => Promise<T>): Promise<T> {
+  const previousApiUrl = process.env.GEMMA_API_URL;
+  const previousModelName = process.env.GEMMA_MODEL_NAME;
+
+  delete process.env.GEMMA_API_URL;
+  delete process.env.GEMMA_MODEL_NAME;
+
+  try {
+    return await callback();
+  } finally {
+    if (typeof previousApiUrl === "undefined") {
+      delete process.env.GEMMA_API_URL;
+    } else {
+      process.env.GEMMA_API_URL = previousApiUrl;
+    }
+
+    if (typeof previousModelName === "undefined") {
+      delete process.env.GEMMA_MODEL_NAME;
+    } else {
+      process.env.GEMMA_MODEL_NAME = previousModelName;
+    }
+  }
+}
+
+async function withoutGemmaModelName<T>(callback: () => Promise<T>): Promise<T> {
+  const previousApiUrl = process.env.GEMMA_API_URL;
+  const previousModelName = process.env.GEMMA_MODEL_NAME;
+
+  process.env.GEMMA_API_URL = "http://127.0.0.1:1/v1/chat/completions";
+  delete process.env.GEMMA_MODEL_NAME;
+
+  try {
+    return await callback();
+  } finally {
+    if (typeof previousApiUrl === "undefined") {
+      delete process.env.GEMMA_API_URL;
+    } else {
+      process.env.GEMMA_API_URL = previousApiUrl;
+    }
+
+    if (typeof previousModelName === "undefined") {
+      delete process.env.GEMMA_MODEL_NAME;
+    } else {
+      process.env.GEMMA_MODEL_NAME = previousModelName;
     }
   }
 }

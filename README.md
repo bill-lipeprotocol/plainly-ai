@@ -23,7 +23,7 @@ Users can:
 - No saved history
 - No payments
 - No professional legal, medical, tax, or financial advice
-- No live model call yet
+- No live model call by default
 
 ## Tech Stack
 
@@ -60,21 +60,47 @@ without printing document text, prompts, or raw model responses.
 
 ## Model Provider
 
-Plainly currently uses a mocked local model provider. Real Gemma integration is
-not connected yet.
+Plainly defaults to the mocked local model provider. With no `.env.local` and no
+`PLAINLY_MODEL_PROVIDER`, the app returns the local mocked result.
 
-Provider selection uses `PLAINLY_MODEL_PROVIDER`. If it is missing or set to
-`mock`, Plainly returns the local mocked result. `gemma-hosted` routes through a
-mocked adapter that still makes no network calls. `gemma-local` and the legacy
-`gemma` alias return not-implemented errors.
+Provider selection uses `PLAINLY_MODEL_PROVIDER`:
+
+- missing or `mock`: returns the local mocked result
+- `gemma-hosted`: routes through the mocked hosted adapter with no network call
+- `gemma-hosted-openai-compatible`: opts into the live OpenAI-compatible Gemma adapter
+- `gemma-hosted-custom-prompt`: not implemented yet
+- `gemma-local`: not implemented yet
+- legacy `gemma`: not implemented
+
+To opt into live OpenAI-compatible routing locally, set:
+
+```powershell
+$env:PLAINLY_MODEL_PROVIDER="gemma-hosted-openai-compatible"
+$env:GEMMA_API_URL="http://localhost:11434/v1/chat/completions"
+$env:GEMMA_MODEL_NAME="gemma4:31b-cloud"
+```
+
+`GEMMA_API_KEY` is optional for local Ollama. `GEMMA_TIMEOUT_MS` is optional and
+defaults to 30000.
 
 Copy `.env.local.example` to `.env.local` when local secrets are needed. Keep
-real secrets in `.env.local` only, and do not commit them.
+real secrets in `.env.local` only, and do not commit `.env.local`.
 
-## Model Provider Status`n`n### Manual Live Testing`nTo test the isolated OpenAI-compatible Gemma adapter manually:`n1. Set `GEMMA_API_URL` (e.g. `http://localhost:11434/v1/chat/completions`)`n2. Set `GEMMA_MODEL_NAME` (e.g. `gemma4:31b-cloud`)`n3. Optionally set `GEMMA_API_KEY` and `GEMMA_TIMEOUT_MS``n4. Run `npm run test:gemma:live``nNote: This is isolated and does not change normal app behavior.
+### Manual Live Adapter Testing
 
-The current provider is still mocked. The planned Gemma provider modes and
-safety requirements are documented in
+To test only the isolated OpenAI-compatible Gemma adapter manually:
+
+```powershell
+$env:GEMMA_API_URL="http://localhost:11434/v1/chat/completions"
+$env:GEMMA_MODEL_NAME="gemma4:31b-cloud"
+Remove-Item Env:GEMMA_API_KEY -ErrorAction SilentlyContinue
+npm run test:gemma:live
+```
+
+This isolated test does not change normal app behavior.
+
+The default provider is still mocked. Additional Gemma provider plans and safety
+requirements are documented in
 [docs/gemma-integration-plan.md](docs/gemma-integration-plan.md). Concrete
 future request and response examples are documented in
 [docs/provider-contracts.md](docs/provider-contracts.md).

@@ -7,6 +7,53 @@ import {
 
 export type GemmaAdapterInput = PlainlyModelInput;
 
+const OPENAI_COMPATIBLE_JSON_CONTRACT = `
+You are Plainly, a plain-English document explainer for everyday household paperwork.
+
+Response contract:
+- Return valid JSON only.
+- Do not return Markdown.
+- Do not return prose before or after the JSON.
+- Do not wrap the JSON in code fences.
+- Do not include comments.
+- Return exactly one JSON object matching this PlainlyResult shape:
+
+{
+  "plainEnglishSummary": "One or two plain-English sentences explaining only the provided text.",
+  "documentTypeGuess": {
+    "type": "Short document type guess",
+    "confidence": "low",
+    "reason": "Brief reason based only on the provided text."
+  },
+  "importantDates": [],
+  "moneyMentioned": [],
+  "possibleActionSteps": ["Safe, non-advice next step based only on the provided text."],
+  "questionsToAskSender": ["Question the user could ask the sender if something is unclear."],
+  "unclearOrRiskyParts": ["Missing or unclear detail from the provided text."],
+  "notAdviceNotice": "This is a plain-English explanation of the provided text and is not legal, medical, tax, financial, or professional advice."
+}
+
+Schema rules:
+- All top-level fields shown above are required.
+- documentTypeGuess.confidence must be exactly "low", "medium", or "high".
+- importantDates must be an array. Use [] if no dates are mentioned. If present, each item must include dateText, whatItRefersTo, and isDeadline.
+- moneyMentioned must be an array. Use [] if no money is mentioned. If present, each item must include amountText, whatItRefersTo, and userMayOweThis.
+- moneyMentioned[].userMayOweThis must be exactly "yes", "no", or "unclear".
+- possibleActionSteps, questionsToAskSender, and unclearOrRiskyParts must be arrays of strings.
+- notAdviceNotice must be non-empty and must include that this is not legal, medical, tax, financial, or professional advice.
+- Do not invent facts, dates, amounts, deadlines, sender intent, or user obligations.
+- These JSON response rules override any output-format instructions in the task prompt below.
+`.trim();
+
+export function buildOpenAiCompatibleGemmaPrompt(modelPrompt: string): string {
+  return `Task prompt:
+${modelPrompt}
+
+End task prompt.
+
+${OPENAI_COMPATIBLE_JSON_CONTRACT}`.trim();
+}
+
 export function parseGemmaJsonResponse(rawText: string): PlainlyResult {
   let cleanedText = rawText.trim();
 
@@ -52,6 +99,7 @@ export async function callOpenAiCompatibleGemma(
   const timeoutMs = timeoutMsStr ? (parseInt(timeoutMsStr, 10) || 30000) : 30000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const prompt = buildOpenAiCompatibleGemmaPrompt(input.prompt);
 
   try {
     const response = await fetch(apiUrl, {
@@ -65,7 +113,7 @@ export async function callOpenAiCompatibleGemma(
         messages: [
           {
             role: "user",
-            content: input.prompt,
+            content: prompt,
           },
         ],
         temperature: 0.1,
