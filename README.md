@@ -57,6 +57,7 @@ Operational docs:
 - [Production error monitoring plan](docs/production-error-monitoring-plan.md)
 - [Hosted live-provider evaluation plan](docs/hosted-live-provider-evaluation.md)
 - [Hosted live-provider POC plan](docs/hosted-live-provider-poc-plan.md)
+- [Hosted provider candidate selection](docs/hosted-provider-candidate-selection.md)
 
 ## Public MVP Demo
 

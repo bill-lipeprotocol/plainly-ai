@@ -139,6 +139,7 @@
 - [x] Launch Build 6: Add production error monitoring plan, docs-only first
 - [x] Launch Build 7: Add hosted live-provider evaluation plan
 - [x] Launch Build 8: Add hosted live-provider POC plan and gated test path
+- [x] Launch Build 9: Select hosted provider candidate and local POC checklist
 
 ## Launch Track - Remaining
 
@@ -150,8 +151,9 @@
 - [ ] Custom domain setup
 - [ ] Public feedback channel implementation only after privacy plan
 - [ ] Monitoring tool evaluation only after docs plan
-- [ ] Select candidate hosted provider
+- [ ] Obtain candidate provider key outside repo
 - [ ] Run local hosted-provider POC
+- [ ] Document safe hosted-provider POC pass/fail result
 - [ ] Review provider data-retention, cost, and rate limits
 - [ ] Preview-deployment live test only after local POC passes
 - [ ] Production live activation only after preview passes
