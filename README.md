@@ -71,12 +71,13 @@ mocked adapter that still makes no network calls. `gemma-local` and the legacy
 Copy `.env.local.example` to `.env.local` when local secrets are needed. Keep
 real secrets in `.env.local` only, and do not commit them.
 
-## Model Provider Status
+## Model Provider Status`n`n### Manual Live Testing`nTo test the isolated OpenAI-compatible Gemma adapter manually:`n1. Set `GEMMA_API_URL` (e.g. `http://localhost:11434/v1/chat/completions`)`n2. Set `GEMMA_MODEL_NAME` (e.g. `gemma4:31b-cloud`)`n3. Optionally set `GEMMA_API_KEY` and `GEMMA_TIMEOUT_MS``n4. Run `npm run test:gemma:live``nNote: This is isolated and does not change normal app behavior.
 
 The current provider is still mocked. The planned Gemma provider modes and
 safety requirements are documented in
 [docs/gemma-integration-plan.md](docs/gemma-integration-plan.md). Concrete
 future request and response examples are documented in
 [docs/provider-contracts.md](docs/provider-contracts.md).
+
 
 

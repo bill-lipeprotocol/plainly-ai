@@ -19,3 +19,8 @@ The provider returned a response adhering to the OpenAI Chat Completions API spe
 
 ## Conclusion
 The endpoint is compatible with the current adapter logic for parsing JSON-formatted model responses.
+
+
+## Milestone 5C Update
+Added an isolated callOpenAiCompatibleGemma adapter and a manual test script (
+pm run test:gemma:live). This is for verification only; the /api/explain route remains mock/default. Live provider routing is a later milestone.
