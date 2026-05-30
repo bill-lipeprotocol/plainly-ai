@@ -116,6 +116,21 @@ export const plainlySamples: PlainlySampleDocument[] = [
     ],
   },
   {
+    id: "sample-medical-benefits-coverage-denied",
+    title: "Medical Benefits Coverage Denied Notice",
+    documentType: "Insurance letter",
+    documentText:
+      "Synthetic sample document. This benefits notice says coverage for a requested medical service has been denied because the reviewer says the service was not approved under the plan rules. It mentions an appeal deadline and says the recipient may submit more information before the deadline. This text is fictional and contains no medical ID, claim number, name, address, or real health information.",
+    expectedDates: ["appeal deadline"],
+    expectedMoney: [],
+    expectedHighRiskAlert: true,
+    expectedSummaryNotes: [
+      "Coverage for a requested medical service was denied.",
+      "The notice mentions an appeal deadline.",
+      "The recipient may submit more information before the deadline.",
+    ],
+  },
+  {
     id: "sample-debt-collection-letter",
     title: "Debt Collection Letter",
     documentType: "Notice",

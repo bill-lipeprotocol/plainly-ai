@@ -36,6 +36,12 @@ export function DocumentForm({
   onDocumentTextChange,
   onSubmit,
 }: DocumentFormProps) {
+  const trimmedTextLength = documentText.trim().length;
+  const hasSomeText = trimmedTextLength > 0;
+  const textIsShort = hasSomeText && trimmedTextLength < 100;
+  const textIsLong = documentText.length > 12000;
+  const sensitiveDetailMentioned = mayMentionSensitiveDetails(documentText);
+
   return (
     <section ref={formRef} className="mx-auto max-w-3xl px-6 py-10">
       <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8">
@@ -44,11 +50,12 @@ export function DocumentForm({
         </h2>
 
         <p className="mt-3 text-slate-700">
-          Copy and paste the text from your bill, notice, letter, or paperwork
-          below. Plainly will explain what it appears to say in simple English.
+          Copy and paste one section from your bill, notice, letter, or
+          paperwork. Plainly works best with a single notice, page, or paragraph
+          group at a time.
         </p>
 
-        <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+        <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm leading-6 text-emerald-900">
           For this first version, Plainly does not save your document text after
           generating the explanation.
         </p>
@@ -57,6 +64,10 @@ export function DocumentForm({
           <label className="block">
             <span className="text-sm font-medium">
               What kind of document is this?
+            </span>
+            <span className="mt-1 block text-sm text-slate-500">
+              Pick the closest match. If you are unsure, choose Other / not
+              sure.
             </span>
 
             <select
@@ -78,6 +89,9 @@ export function DocumentForm({
               What are you trying to understand?
             </span>
             <span className="ml-2 text-sm text-slate-500">Optional</span>
+            <span className="mt-1 block text-sm text-slate-500">
+              A short question can help focus the explanation.
+            </span>
 
             <input
               value={userQuestion}
@@ -91,6 +105,16 @@ export function DocumentForm({
             <span className="text-sm font-medium">
               Paste the document text here
             </span>
+            <span className="mt-1 block text-sm text-slate-500">
+              Use one important section at a time. Remove personal details before
+              submitting.
+            </span>
+
+            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-medium leading-6 text-amber-950">
+              Before pasting, remove names, addresses, account numbers, Social
+              Security numbers, claim numbers, medical IDs, and other sensitive
+              details.
+            </p>
 
             <textarea
               value={documentText}
@@ -101,6 +125,36 @@ export function DocumentForm({
               rows={10}
               className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900"
             />
+            <div className="mt-2 flex flex-col gap-1 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <span>
+                {hasSomeText
+                  ? `${trimmedTextLength} characters pasted`
+                  : "Paste at least a paragraph for the clearest explanation."}
+              </span>
+              <span>Limit: 12,000 characters</span>
+            </div>
+
+            {textIsShort ? (
+              <p className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                This may be too short to explain well. Add the surrounding
+                paragraph or the main section of the notice.
+              </p>
+            ) : null}
+
+            {textIsLong ? (
+              <p className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                This is longer than the current limit. Try the first page,
+                summary, charges, deadline, or action-needed section.
+              </p>
+            ) : null}
+
+            {sensitiveDetailMentioned ? (
+              <p className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                Quick reminder: if the pasted text includes sensitive details,
+                remove them before submitting. This reminder does not block
+                submission.
+              </p>
+            ) : null}
           </label>
 
           {error ? (
@@ -115,17 +169,31 @@ export function DocumentForm({
             disabled={isLoading}
             className="w-full rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isLoading ? "Reading your document..." : "Explain it plainly"}
+            {isLoading ? "Preparing explanation..." : "Explain it plainly"}
           </button>
 
           {isLoading ? (
             <p className="text-center text-sm text-slate-600">
-              Plainly is looking for the summary, dates, money, possible next
-              steps, and unclear parts.
+              Reading the text and preparing a plain-English explanation. This
+              may take a moment.
             </p>
           ) : null}
         </div>
       </div>
     </section>
   );
+}
+
+function mayMentionSensitiveDetails(text: string): boolean {
+  const normalized = text.toLowerCase();
+  const sensitiveDetailTerms = [
+    "account number",
+    "ssn",
+    "social security",
+    "medical id",
+    "claim number",
+    "address",
+  ];
+
+  return sensitiveDetailTerms.some((term) => normalized.includes(term));
 }

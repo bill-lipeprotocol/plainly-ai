@@ -38,5 +38,5 @@ export const mockResult: PlainlyResult = {
     "The pasted text does not show whether the user can opt out, cancel, or avoid the increase.",
   ],
   notAdviceNotice:
-    "This is a plain-English explanation of the text you provided. It is not legal, medical, tax, financial, or professional advice.",
+    "Plainly can help you understand the text you provided, but it is not a substitute for legal, medical, tax, financial, insurance, or other professional advice.",
 };

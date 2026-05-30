@@ -4,6 +4,9 @@ const highRiskTerms = [
   "court",
   "collections",
   "denied coverage",
+  "coverage denied",
+  "coverage has been denied",
+  "benefits denied",
   "termination",
   "foreclosure",
   "garnishment",
@@ -11,6 +14,9 @@ const highRiskTerms = [
   "tax penalty",
   "emergency medical",
   "benefits denial",
+  "medical service denied",
+  "appeal deadline",
+  "not approved under the plan rules",
 ];
 
 export function detectHighRisk(text: string): boolean {

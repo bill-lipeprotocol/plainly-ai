@@ -2,8 +2,8 @@ const feedbackOptions = [
   "Yes, this helped",
   "Something was wrong",
   "I still feel confused",
-  "I want PDF upload",
-  "I want private saved summaries",
+  "The wording was unclear",
+  "I wanted a shorter summary",
 ];
 
 type FeedbackButtonsProps = {
@@ -20,7 +20,8 @@ export function FeedbackButtons({
       <h3 className="text-lg font-semibold">Was this explanation helpful?</h3>
 
       <p className="mt-1 text-sm text-slate-600">
-        Your feedback helps improve Plainly without saving your document text.
+        Your feedback helps improve Plainly. Do not include personal details in
+        feedback.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">

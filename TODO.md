@@ -124,6 +124,10 @@
 - [ ] Add JSON validation and fallback error message
 - [ ] Add rate limiting
 
+## Milestone 6 - MVP Polish
+
+- [x] 6A: Polish user-facing safety copy, empty states, loading state, and generic error language
+
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
 - [ ] Update README

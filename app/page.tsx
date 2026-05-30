@@ -14,7 +14,7 @@ type ExplainResponse = {
 };
 
 const SAFE_EXPLAIN_ERROR =
-  "Plainly had trouble generating the explanation. Please try again with a shorter section of text.";
+  "Plainly could not prepare an explanation right now. Try a shorter section, remove unusual formatting, or try again in a moment.";
 
 export default function Home() {
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -46,14 +46,14 @@ export default function Home() {
 
     if (documentText.trim().length < 100) {
       setError(
-        "Please paste more of the document so Plainly has enough context to explain it."
+        "Please paste a little more text from the section you want explained. Plainly works best with at least a paragraph."
       );
       return;
     }
 
     if (documentText.length > 12000) {
       setError(
-        "This document is too long for the first version. Please paste the most important section, such as the first page, summary, charges, or deadline notice."
+        "This is too much text for the first version. Paste one important section or notice at a time, such as the summary, charges, or deadline paragraph."
       );
       return;
     }
