@@ -143,6 +143,7 @@
 - [x] Launch Build 10: Record local-only hosted Gemini provider POC result
 - [x] Launch Build 11: Add preview live-provider test plan
 - [x] Launch Build 12: Record preview live-provider test result
+- [x] Launch Build 13: Add production live-provider activation decision plan
 
 ## Launch Track - Remaining
 
@@ -156,11 +157,11 @@
 - [ ] Monitoring tool evaluation only after docs plan
 - [ ] Obtain candidate provider key outside repo
 - [ ] Run local hosted-provider POC
-- [ ] Review Gemini provider cost/rate limits and data retention
+- [ ] Provider cost/rate-limit/data-retention review
 - [ ] Run preview live-provider test only after secrets/privacy/logging checks are ready
 - [ ] Remove preview env vars if not continuing
 - [ ] Monitoring/privacy review before broader release
-- [ ] Production live-provider activation decision
+- [ ] Production activation go/no-go decision
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
