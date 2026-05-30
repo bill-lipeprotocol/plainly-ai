@@ -60,6 +60,7 @@ Operational docs:
 - [Hosted provider candidate selection](docs/hosted-provider-candidate-selection.md)
 - [Hosted provider POC result](docs/hosted-provider-poc-result.md)
 - [Preview live-provider test plan](docs/preview-live-provider-test-plan.md)
+- [Preview live-provider test result](docs/preview-live-provider-test-result.md)
 
 ## Public MVP Demo
 
@@ -82,6 +83,9 @@ are set.
 Preview live-provider testing is planned and gated only. It must use preview-only
 environment variables, synthetic text, safe log review, and must not change
 production mock/default mode.
+
+The preview live-provider test passed after retry on 2026-05-30. Production
+remains mock/default and the preview was not promoted to production.
 
 See [docs/mvp-v1-launch-note.md](docs/mvp-v1-launch-note.md) for the public
 launch note and [docs/deployment-smoke-test.md](docs/deployment-smoke-test.md)
