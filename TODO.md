@@ -137,6 +137,7 @@
 - [x] Launch Build 4: Add public MVP launch note and README deployment status
 - [x] Launch Build 5: Add domain/branding plan and privacy-safe feedback plan
 - [x] Launch Build 6: Add production error monitoring plan, docs-only first
+- [x] Launch Build 7: Add hosted live-provider evaluation plan
 
 ## Launch Track - Remaining
 
@@ -145,10 +146,10 @@
 - [ ] Manual live-provider rehearsal only if intentionally needed
 - [ ] Final no-secrets audit before any deployment work
 - [ ] Deployment plan and hosting decision
-- [ ] Hosted live-provider evaluation
 - [ ] Custom domain setup
 - [ ] Public feedback channel implementation only after privacy plan
 - [ ] Monitoring tool evaluation only after docs plan
+- [ ] Hosted live-provider proof-of-concept only after evaluation criteria are met
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 

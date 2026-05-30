@@ -55,6 +55,7 @@ Operational docs:
 - [Domain and branding plan](docs/domain-and-branding-plan.md)
 - [Feedback collection plan](docs/feedback-collection-plan.md)
 - [Production error monitoring plan](docs/production-error-monitoring-plan.md)
+- [Hosted live-provider evaluation plan](docs/hosted-live-provider-evaluation.md)
 
 ## Public MVP Demo
 
