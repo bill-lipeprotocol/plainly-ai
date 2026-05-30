@@ -176,6 +176,36 @@ export const plainlySamples: PlainlySampleDocument[] = [
     ],
   },
   {
+    id: "sample-low-risk-negated-disclaimer",
+    title: "Low-Risk Notice With Negated Risk Words",
+    documentType: "Notice",
+    documentText:
+      "Synthetic sample document. This household service notice says a routine plan update will take effect on December 1, 2026. It says the update does not mention cancellation fees, legal action, medical issues, taxes, debt collection, eviction, foreclosure, collections, or denied coverage. It asks the household to review the updated service description.",
+    expectedDates: ["December 1, 2026"],
+    expectedMoney: [],
+    expectedHighRiskAlert: false,
+    expectedSummaryNotes: [
+      "Routine service update takes effect on a future date.",
+      "The notice uses high-risk words only in a negated disclaimer.",
+      "The household is asked to review the updated service description.",
+    ],
+  },
+  {
+    id: "sample-mixed-negated-and-real-risk",
+    title: "Mixed Disclaimer and Eviction Risk Notice",
+    documentType: "Rental or landlord letter",
+    documentText:
+      "Synthetic sample document. This rental notice says the general FAQ does not mention eviction or foreclosure. However, the final section says eviction may occur if the listed unpaid balance is not addressed by February 15, 2026. The text is fictional and does not include any real names, addresses, or account numbers.",
+    expectedDates: ["February 15, 2026"],
+    expectedMoney: [],
+    expectedHighRiskAlert: true,
+    expectedSummaryNotes: [
+      "The FAQ disclaimer contains negated risk words.",
+      "A later section says eviction may occur.",
+      "There is a date connected to the unpaid balance.",
+    ],
+  },
+  {
     id: "sample-eviction-related-notice",
     title: "Eviction-Related Notice",
     documentType: "Rental or landlord letter",

@@ -127,6 +127,7 @@
 ## Milestone 6 - MVP Polish
 
 - [x] 6A: Polish user-facing safety copy, empty states, loading state, and generic error language
+- [x] 6B: Reduce obvious high-risk alert false positives from negated disclaimer text
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 
