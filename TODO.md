@@ -116,6 +116,7 @@
 - [x] 5D: Tighten isolated live test prompt and diagnostics
 - [x] 5E: Wire OpenAI-compatible Gemma routing behind environment flag
 - [x] 5F: Add safe live API regression script for `/api/explain`
+- [x] 5G: Add safe provider preflight script/checklist
 
 - [ ] Add hosted Gemma endpoint wrapper
 - [ ] Add `.env.local.example`
