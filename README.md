@@ -52,6 +52,8 @@ Operational docs:
 - [Deployment smoke test](docs/deployment-smoke-test.md)
 - [MVP launch-readiness runbook](docs/mvp-launch-readiness-runbook.md)
 - [Deployment prep checklist](docs/deployment-prep-checklist.md)
+- [Domain and branding plan](docs/domain-and-branding-plan.md)
+- [Feedback collection plan](docs/feedback-collection-plan.md)
 
 ## Public MVP Demo
 

@@ -135,6 +135,7 @@
 - [x] Launch Build 1: Add deployment prep checklist, README MVP status, and truthful metadata
 - [x] Launch Build 2: Polish public MVP page, CTA, and synthetic sample flow
 - [x] Launch Build 4: Add public MVP launch note and README deployment status
+- [x] Launch Build 5: Add domain/branding plan and privacy-safe feedback plan
 
 ## Launch Track - Remaining
 
@@ -145,8 +146,8 @@
 - [ ] Deployment plan and hosting decision
 - [ ] Hosted live-provider evaluation
 - [ ] Production error monitoring plan, docs-only first
-- [ ] Domain and branding polish
-- [ ] User feedback collection plan without storing documents
+- [ ] Custom domain setup
+- [ ] Feedback channel implementation only after privacy plan
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 

@@ -20,8 +20,8 @@ export function FeedbackButtons({
       <h3 className="text-lg font-semibold">Was this explanation helpful?</h3>
 
       <p className="mt-1 text-sm text-slate-600">
-        Your feedback helps improve Plainly. Do not include personal details in
-        feedback.
+        These buttons are for this demo screen only and do not submit feedback
+        yet. Do not include personal details in feedback.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
