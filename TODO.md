@@ -132,6 +132,15 @@
 ## Milestone 7 - Launch Readiness
 
 - [x] 7A: Add MVP launch-readiness operating runbook
+- [x] Launch Build 1: Add deployment prep checklist, README MVP status, and truthful metadata
+
+## Launch Track - Remaining
+
+- [ ] Manual UI review using synthetic examples
+- [ ] Manual mock-mode demo rehearsal
+- [ ] Manual live-provider rehearsal only if intentionally needed
+- [ ] Final no-secrets audit before any deployment work
+- [ ] Deployment plan and hosting decision
 
 ## Milestone 4 - Launch Prep`n- [x] 4E: Verify coding-agent workflow`n- [x] 4F: Document coding-agent workflow
 

@@ -4,7 +4,8 @@ Plainly.ai is a text-only MVP that explains confusing household paperwork in sim
 
 ## Current Scope
 
-The first version is a mocked front-end prototype.
+Plainly.ai is currently a launch-prep MVP. The default provider remains mocked,
+and live Gemma routing is opt-in only for local verification.
 
 Users can:
 
@@ -24,6 +25,27 @@ Users can:
 - No payments
 - No professional legal, medical, tax, or financial advice
 - No live model call by default
+
+## MVP Status
+
+- Default provider: mock.
+- Live provider: opt-in with `PLAINLY_MODEL_PROVIDER=gemma-hosted-openai-compatible`.
+- No uploads, accounts, payments, analytics, database, document storage, or document history.
+- Do not commit `.env.local` or secrets.
+
+Key local checks:
+
+```powershell
+npm run check:provider
+npm run lint
+npm run build
+npm run test:adapter
+```
+
+Operational docs:
+
+- [MVP launch-readiness runbook](docs/mvp-launch-readiness-runbook.md)
+- [Deployment prep checklist](docs/deployment-prep-checklist.md)
 
 ## Tech Stack
 
