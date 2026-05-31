@@ -7,15 +7,15 @@ import { FeedbackButtons } from "./FeedbackButtons";
 type ResultViewProps = {
   result: PlainlyResult;
   showHighRiskAlert: boolean;
-  feedback: string;
-  onFeedbackChange: (value: string) => void;
+  explanationId: string;
+  documentType: string;
 };
 
 export function ResultView({
   result,
   showHighRiskAlert,
-  feedback,
-  onFeedbackChange,
+  explanationId,
+  documentType,
 }: ResultViewProps) {
   return (
     <section className="mx-auto max-w-3xl px-6 py-10">
@@ -126,8 +126,10 @@ export function ResultView({
       </div>
 
       <FeedbackButtons
-        feedback={feedback}
-        onFeedbackChange={onFeedbackChange}
+        key={explanationId}
+        explanationId={explanationId}
+        documentType={documentType}
+        highRiskDetected={showHighRiskAlert}
       />
 
       <div className="mt-8 rounded-2xl bg-slate-950 p-6 text-white">

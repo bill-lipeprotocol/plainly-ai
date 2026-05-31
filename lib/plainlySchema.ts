@@ -31,6 +31,14 @@ export type PlainlyResult = {
   notAdviceNotice: string;
 };
 
+export type PlainlyFeedback = {
+  explanationId: string;
+  feedback: "helpful" | "not_helpful";
+  documentType: string;
+  highRiskDetected: boolean;
+  createdAt: string;
+};
+
 type ValidationResult<T> =
   | {
       success: true;
@@ -47,6 +55,24 @@ const SHORT_DOCUMENT_TEXT_ERROR =
   "Please paste more of the document so Plainly has enough context to explain it.";
 const LONG_DOCUMENT_TEXT_ERROR =
   "This document is too long for the first version. Please paste the most important section, such as the first page, summary, charges, or deadline notice.";
+const FEEDBACK_KEYS = [
+  "explanationId",
+  "feedback",
+  "documentType",
+  "highRiskDetected",
+  "createdAt",
+];
+const FEEDBACK_DOCUMENT_TYPES = [
+  "Bill",
+  "Bill or account notice",
+  "Notice",
+  "Insurance letter",
+  "Medical bill",
+  "School letter",
+  "Rental or landlord letter",
+  "Government letter",
+  "Other / not sure",
+];
 
 export function validatePlainlyExplainRequest(
   input: unknown
@@ -126,6 +152,35 @@ export function validatePlainlyResult(
   };
 }
 
+export function validatePlainlyFeedback(
+  input: unknown
+): ValidationResult<PlainlyFeedback> {
+  if (!isRecord(input) || !hasOnlyKeys(input, FEEDBACK_KEYS)) {
+    return invalidFeedback();
+  }
+
+  if (
+    !isUuid(input.explanationId) ||
+    !isFeedbackValue(input.feedback) ||
+    !isFeedbackDocumentType(input.documentType) ||
+    typeof input.highRiskDetected !== "boolean" ||
+    !isIsoDateString(input.createdAt)
+  ) {
+    return invalidFeedback();
+  }
+
+  return {
+    success: true,
+    data: {
+      explanationId: input.explanationId,
+      feedback: input.feedback,
+      documentType: input.documentType,
+      highRiskDetected: input.highRiskDetected,
+      createdAt: input.createdAt,
+    },
+  };
+}
+
 function validateDocumentTypeGuess(input: unknown): boolean {
   return (
     isRecord(input) &&
@@ -169,12 +224,52 @@ function isRecord(input: unknown): input is Record<string, unknown> {
   return typeof input === "object" && input !== null && !Array.isArray(input);
 }
 
+function hasOnlyKeys(
+  input: Record<string, unknown>,
+  allowedKeys: string[]
+): boolean {
+  const keys = Object.keys(input);
+
+  return (
+    keys.length === allowedKeys.length &&
+    keys.every((key) => allowedKeys.includes(key))
+  );
+}
+
 function isNonEmptyString(input: unknown): input is string {
   return typeof input === "string" && input.trim().length > 0;
 }
 
+function isUuid(input: unknown): input is string {
+  return (
+    typeof input === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      input
+    )
+  );
+}
+
 function isConfidence(input: unknown): input is "low" | "medium" | "high" {
   return input === "low" || input === "medium" || input === "high";
+}
+
+function isFeedbackValue(input: unknown): input is PlainlyFeedback["feedback"] {
+  return input === "helpful" || input === "not_helpful";
+}
+
+function isFeedbackDocumentType(input: unknown): input is string {
+  return (
+    typeof input === "string" && FEEDBACK_DOCUMENT_TYPES.includes(input)
+  );
+}
+
+function isIsoDateString(input: unknown): input is string {
+  return (
+    typeof input === "string" &&
+    input.length <= 40 &&
+    !Number.isNaN(Date.parse(input)) &&
+    new Date(input).toISOString() === input
+  );
 }
 
 function isUserMayOweThis(input: unknown): input is "yes" | "no" | "unclear" {
@@ -185,5 +280,12 @@ function invalidResult(): ValidationResult<PlainlyResult> {
   return {
     success: false,
     error: "Plainly could not prepare a valid mocked explanation.",
+  };
+}
+
+function invalidFeedback(): ValidationResult<PlainlyFeedback> {
+  return {
+    success: false,
+    error: "Please send valid feedback.",
   };
 }

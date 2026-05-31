@@ -34,7 +34,8 @@ export default function Home() {
   const [hasResult, setHasResult] = useState(false);
   const [result, setResult] = useState<PlainlyResult | null>(null);
   const [showHighRiskAlert, setShowHighRiskAlert] = useState(false);
-  const [feedback, setFeedback] = useState("");
+  const [explanationId, setExplanationId] = useState("");
+  const [explainedDocumentType, setExplainedDocumentType] = useState("");
 
   function scrollToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,7 +48,8 @@ export default function Home() {
     setError("");
     setHasResult(false);
     setResult(null);
-    setFeedback("");
+    setExplanationId("");
+    setExplainedDocumentType("");
     scrollToForm();
   }
 
@@ -55,7 +57,8 @@ export default function Home() {
     setError("");
     setHasResult(false);
     setResult(null);
-    setFeedback("");
+    setExplanationId("");
+    setExplainedDocumentType("");
 
     if (!documentType) {
       setError('Please choose a document type, or select "Other / not sure."');
@@ -116,6 +119,8 @@ export default function Home() {
 
       setResult(data.result);
       setShowHighRiskAlert(Boolean(data.showHighRiskAlert));
+      setExplanationId(window.crypto.randomUUID());
+      setExplainedDocumentType(documentType);
       setHasResult(true);
     } catch {
       setError(SAFE_EXPLAIN_ERROR);
@@ -149,8 +154,8 @@ export default function Home() {
         <ResultView
           result={result}
           showHighRiskAlert={showHighRiskAlert}
-          feedback={feedback}
-          onFeedbackChange={setFeedback}
+          explanationId={explanationId}
+          documentType={explainedDocumentType}
         />
       ) : null}
 
