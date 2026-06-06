@@ -45,9 +45,22 @@ export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
         method: "POST",
         body: formData,
       });
+      const contentType = response.headers.get("content-type") || "";
+
+      if (!contentType.includes("application/json")) {
+        await response.text();
+        throw new Error(
+          "The extraction service returned a server error instead of JSON. Please try again or paste the text directly."
+        );
+      }
+
       const data = (await response.json()) as ExtractionResponse;
 
-      if (!response.ok || !data.text) {
+      if (!response.ok) {
+        throw new Error(data.error || "Plainly could not read this document.");
+      }
+
+      if (!data.text) {
         throw new Error(data.error || "Plainly could not read this document.");
       }
 
