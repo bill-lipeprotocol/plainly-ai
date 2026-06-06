@@ -1,6 +1,6 @@
 import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
 
+import { loadPdfJs } from "./loadPdfJs.ts";
 import { transcribeDocumentImage } from "./transcribeImage.ts";
 
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
@@ -123,36 +123,100 @@ export async function extractPublicGoogleDoc(
 async function extractPdf(
   bytes: Uint8Array
 ): Promise<{ text: string; usedOcr: boolean }> {
-  const parser = new PDFParse({ data: bytes });
+  const pdfjs = await loadPdfJs();
+  const loadingTask = pdfjs.getDocument({
+    data: bytes,
+    useSystemFonts: true,
+  });
+  const document = await loadingTask.promise;
 
   try {
-    const textResult = await parser.getText();
-    const text = normalizeText(textResult.text);
+    const pageText: string[] = [];
+
+    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+      const page = await document.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const text = content.items
+        .map((item) => ("str" in item ? item.str : ""))
+        .join(" ");
+      pageText.push(text);
+      page.cleanup();
+    }
+
+    const text = normalizeText(pageText.join("\n\n"));
 
     if (text.length >= MIN_USEFUL_TEXT_LENGTH) {
       return { text, usedOcr: false };
     }
 
-    const screenshots = await parser.getScreenshot({
-      first: MAX_SCANNED_PDF_PAGES,
-      desiredWidth: 1400,
-      imageBuffer: false,
-      imageDataUrl: true,
-    });
-    const transcriptions: string[] = [];
-
-    for (const page of screenshots.pages) {
-      const pageText = await transcribeDocumentImage(page.dataUrl);
-      transcriptions.push(`Page ${page.pageNumber}\n${pageText}`);
+    return await transcribeScannedPdf(document);
+  } catch (error) {
+    if (isPdfRenderingEnvironmentError(error)) {
+      throw new Error(
+        "This scanned PDF could not be processed in this deployment. Please upload page images or paste the text directly."
+      );
     }
 
-    return {
-      text: transcriptions.join("\n\n"),
-      usedOcr: true,
-    };
+    throw error;
   } finally {
-    await parser.destroy();
+    await document.destroy();
+    await loadingTask.destroy();
   }
+}
+
+async function transcribeScannedPdf(
+  document: Awaited<
+    ReturnType<
+      Awaited<ReturnType<typeof loadPdfJs>>["getDocument"]
+    >["promise"]
+  >
+): Promise<{ text: string; usedOcr: true }> {
+  const { createCanvas } = await import("@napi-rs/canvas");
+  const transcriptions: string[] = [];
+  const pageCount = Math.min(document.numPages, MAX_SCANNED_PDF_PAGES);
+
+  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+    const page = await document.getPage(pageNumber);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const scale = 1400 / baseViewport.width;
+    const viewport = page.getViewport({ scale });
+    const canvas = createCanvas(
+      Math.ceil(viewport.width),
+      Math.ceil(viewport.height)
+    );
+    const context = canvas.getContext("2d");
+
+    await page.render({
+      canvas: canvas as never,
+      canvasContext: context as never,
+      viewport,
+    }).promise;
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const pageText = await transcribeDocumentImage(dataUrl);
+    transcriptions.push(`Page ${pageNumber}\n${pageText}`);
+    page.cleanup();
+  }
+
+  return {
+    text: transcriptions.join("\n\n"),
+    usedOcr: true,
+  };
+}
+
+function isPdfRenderingEnvironmentError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return [
+    "DOMMatrix",
+    "ImageData",
+    "Path2D",
+    "@napi-rs/canvas",
+    "Cannot find module",
+    "Canvas",
+  ].some((term) => error.message.includes(term));
 }
 
 function finalizeExtraction(

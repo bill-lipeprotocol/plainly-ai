@@ -73,5 +73,6 @@ function isExpectedExtractionError(error: unknown): error is Error {
     "Image transcription timed out.",
     "No readable text was returned for this image.",
     "Gemini did not return readable text for this image.",
+    "This scanned PDF could not be processed in this deployment.",
   ].some((message) => error.message.startsWith(message));
 }

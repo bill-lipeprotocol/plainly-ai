@@ -2,6 +2,7 @@ import {
   extractPublicGoogleDoc,
   extractUploadedFile,
 } from "../lib/documentExtraction.ts";
+import { loadPdfJs } from "../lib/loadPdfJs.ts";
 
 let failed = 0;
 
@@ -34,6 +35,19 @@ await check("invalid Google Docs URL rejection", async () => {
     () => extractPublicGoogleDoc("https://example.com/document"),
     "Google Docs"
   );
+});
+
+await check("PDF.js loads after canvas globals", async () => {
+  const pdfjs = await loadPdfJs();
+
+  if (
+    !globalThis.DOMMatrix ||
+    !globalThis.ImageData ||
+    !globalThis.Path2D ||
+    typeof pdfjs.getDocument !== "function"
+  ) {
+    throw new Error("PDF.js loaded without required canvas globals.");
+  }
 });
 
 if (failed > 0) {
