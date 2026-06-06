@@ -12,9 +12,10 @@ export function LandingHero({
       <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
         <a
           href="#top"
+          aria-label="Plainly.ai home"
           className="font-display text-xl font-extrabold tracking-[-0.05em] focus-visible:outline-2 focus-visible:outline-offset-4"
         >
-          plainly<span className="text-[var(--coral)]">.</span>
+          Plainly<span className="text-[var(--coral)]">.ai</span>
         </a>
         <button
           type="button"

@@ -106,9 +106,7 @@ export default function Home() {
       }
 
       if (!response.ok) {
-        setError(
-          response.status === 400 && data.error ? data.error : SAFE_EXPLAIN_ERROR
-        );
+        setError(data.error || SAFE_EXPLAIN_ERROR);
         return;
       }
 
@@ -163,7 +161,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-display text-4xl font-extrabold tracking-[-0.06em]">
-              plainly<span className="text-white">.</span>
+              Plainly<span className="text-white">.ai</span>
             </p>
             <p className="mt-2 max-w-md text-sm leading-6">
               Confusing paperwork, translated into language that sounds human.

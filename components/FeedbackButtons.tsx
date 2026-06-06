@@ -70,7 +70,7 @@ export function FeedbackButtons({
           type="button"
           disabled={buttonsDisabled}
           onClick={() => submitFeedback("helpful")}
-          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold transition hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#151515] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-60"
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 disabled:bg-white disabled:text-black disabled:opacity-60"
         >
           Yes, much clearer
         </button>
@@ -78,7 +78,7 @@ export function FeedbackButtons({
           type="button"
           disabled={buttonsDisabled}
           onClick={() => submitFeedback("not_helpful")}
-          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold transition hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#151515] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-60"
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 disabled:bg-white disabled:text-black disabled:opacity-60"
         >
           Not quite
         </button>

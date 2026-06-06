@@ -15,7 +15,8 @@ type DocumentUploadProps = {
 };
 
 export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const documentInputRef = useRef<HTMLInputElement | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [googleDocUrl, setGoogleDocUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -66,8 +67,11 @@ export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
       );
     } finally {
       setIsExtracting(false);
-      if (inputRef.current) {
-        inputRef.current.value = "";
+      if (documentInputRef.current) {
+        documentInputRef.current.value = "";
+      }
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
       }
     }
   }
@@ -80,8 +84,8 @@ export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
             Start with a file
           </p>
           <p className="mt-1 text-xs leading-5 text-black/55">
-            TXT, DOCX, PDF, PNG, JPG, or WEBP. Maximum 4 MB. Images and scanned
-            PDF pages use AI transcription.
+            Documents and images up to 4 MB. Scanned PDF pages and images use AI
+            transcription.
           </p>
         </div>
         <span className="rounded-full border-2 border-black bg-white px-3 py-1 text-xs font-bold">
@@ -89,10 +93,7 @@ export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
         </span>
       </div>
 
-      <button
-        type="button"
-        disabled={isExtracting}
-        onClick={() => inputRef.current?.click()}
+      <div
         onDragEnter={(event) => {
           event.preventDefault();
           setIsDragging(true);
@@ -105,22 +106,58 @@ export function DocumentUpload({ onTextExtracted }: DocumentUploadProps) {
           const file = event.dataTransfer.files[0];
           if (file) void extractFile(file);
         }}
-        className={`mt-4 flex w-full flex-col items-center border-2 border-dashed border-black px-4 py-6 text-center transition focus-visible:outline-2 focus-visible:outline-offset-4 ${
-          isDragging ? "bg-[var(--lime)]" : "bg-white hover:bg-[var(--lime)]"
+        className={`mt-4 flex w-full flex-col items-center border-2 border-dashed border-black px-4 py-6 text-center transition ${
+          isDragging ? "bg-[var(--lime)]" : "bg-white"
         }`}
       >
         <span className="font-display font-extrabold">
-          {isExtracting ? "Reading document..." : "Drop a document here"}
+          {isExtracting
+            ? "Reading file..."
+            : "Drop a document or image here"}
         </span>
         <span className="mt-1 text-xs text-black/50">
-          or click to choose a file
+          TXT, MD, CSV, DOCX, PDF, PNG, JPG, or WEBP
         </span>
-      </button>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          disabled={isExtracting}
+          onClick={() => documentInputRef.current?.click()}
+          className="border-2 border-black bg-white px-4 py-3 text-sm font-bold transition hover:-translate-y-0.5 hover:bg-[var(--lime)] hover:shadow-[3px_3px_0_#151515] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-50"
+        >
+          Upload document
+        </button>
+        <button
+          type="button"
+          disabled={isExtracting}
+          onClick={() => imageInputRef.current?.click()}
+          className="border-2 border-black bg-white px-4 py-3 text-sm font-bold transition hover:-translate-y-0.5 hover:bg-[var(--coral)] hover:shadow-[3px_3px_0_#151515] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-50"
+        >
+          Upload image
+        </button>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-black/55">
+        Use image upload for screenshots, photos, or scanned pages.
+      </p>
+
       <input
-        ref={inputRef}
+        ref={documentInputRef}
         type="file"
         className="sr-only"
-        accept=".txt,.md,.csv,.docx,.pdf,image/jpeg,image/png,image/webp"
+        accept=".txt,.md,.csv,.docx,.pdf"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void extractFile(file);
+        }}
+      />
+      <input
+        ref={imageInputRef}
+        type="file"
+        className="sr-only"
+        accept="image/png,image/jpeg,image/webp"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void extractFile(file);
