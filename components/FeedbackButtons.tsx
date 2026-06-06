@@ -56,12 +56,12 @@ export function FeedbackButtons({
   const buttonsDisabled = Boolean(selectedFeedback);
 
   return (
-    <section className="mt-8 border-2 border-black bg-[var(--lime)] p-6 shadow-[5px_5px_0_#151515]">
-      <h3 className="font-display text-xl font-extrabold">
+    <section className="mt-8 border-2 border-black bg-[var(--lime)] p-6 text-black shadow-[5px_5px_0_#151515]">
+      <h3 className="font-display text-xl font-extrabold text-black">
         Did this make things clearer?
       </h3>
 
-      <p className="mt-1 text-sm text-black/65">
+      <p className="mt-1 text-sm text-black/70">
         Your feedback helps improve Plainly without saving your document text.
       </p>
 
@@ -70,7 +70,7 @@ export function FeedbackButtons({
           type="button"
           disabled={buttonsDisabled}
           onClick={() => submitFeedback("helpful")}
-          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 disabled:bg-white disabled:text-black disabled:opacity-60"
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus:text-black focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 active:bg-white active:text-black disabled:bg-white disabled:text-black disabled:opacity-60"
         >
           Yes, much clearer
         </button>
@@ -78,7 +78,7 @@ export function FeedbackButtons({
           type="button"
           disabled={buttonsDisabled}
           onClick={() => submitFeedback("not_helpful")}
-          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 disabled:bg-white disabled:text-black disabled:opacity-60"
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus:text-black focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 active:bg-white active:text-black disabled:bg-white disabled:text-black disabled:opacity-60"
         >
           Not quite
         </button>
