@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { callPlainlyModel } from "@/lib/callGemma";
+import {
+  callPlainlyModel,
+  ExplainProviderConfigurationError,
+} from "@/lib/callGemma";
 import { detectHighRisk } from "@/lib/detectHighRisk";
 import { buildPlainlyPrompt } from "@/lib/plainlyPrompt";
 import {
@@ -39,10 +42,17 @@ export async function POST(request: Request) {
       ...input,
       prompt,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof ExplainProviderConfigurationError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     return NextResponse.json(
-      { error: "Plainly could not explain this document right now." },
-      { status: 500 }
+      {
+        error:
+          "The live explanation service could not process this document right now.",
+      },
+      { status: 502 }
     );
   }
 

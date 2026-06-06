@@ -1,45 +1,98 @@
-const feedbackOptions = [
-  "Yes, this helped",
-  "Something was wrong",
-  "I still feel confused",
-  "The wording was unclear",
-  "I wanted a shorter summary",
-];
+"use client";
+
+import { useState } from "react";
+
+import type { PlainlyFeedback } from "@/lib/plainlySchema";
 
 type FeedbackButtonsProps = {
-  feedback: string;
-  onFeedbackChange: (value: string) => void;
+  explanationId: string;
+  documentType: string;
+  highRiskDetected: boolean;
 };
 
-export function FeedbackButtons({
-  feedback,
-  onFeedbackChange,
-}: FeedbackButtonsProps) {
-  return (
-    <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5">
-      <h3 className="text-lg font-semibold">Was this explanation helpful?</h3>
+type FeedbackStatus = "idle" | "submitting" | "sent" | "failed";
 
-      <p className="mt-1 text-sm text-slate-600">
-        These buttons are for this demo screen only and do not submit feedback
-        yet. Do not include personal details in feedback.
+export function FeedbackButtons({
+  explanationId,
+  documentType,
+  highRiskDetected,
+}: FeedbackButtonsProps) {
+  const [selectedFeedback, setSelectedFeedback] = useState<
+    PlainlyFeedback["feedback"] | ""
+  >("");
+  const [status, setStatus] = useState<FeedbackStatus>("idle");
+
+  async function submitFeedback(feedback: PlainlyFeedback["feedback"]) {
+    if (selectedFeedback) {
+      return;
+    }
+
+    setSelectedFeedback(feedback);
+    setStatus("submitting");
+
+    const payload: PlainlyFeedback = {
+      explanationId,
+      feedback,
+      documentType,
+      highRiskDetected,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      setStatus(response.ok ? "sent" : "failed");
+    } catch {
+      setStatus("failed");
+    }
+  }
+
+  const buttonsDisabled = Boolean(selectedFeedback);
+
+  return (
+    <section className="mt-8 border-2 border-black bg-[var(--lime)] p-6 text-black shadow-[5px_5px_0_#151515]">
+      <h3 className="font-display text-xl font-extrabold text-black">
+        Did this make things clearer?
+      </h3>
+
+      <p className="mt-1 text-sm text-black/70">
+        Your feedback helps improve Plainly without saving your document text.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {feedbackOptions.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => onFeedbackChange(option)}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-800 hover:bg-slate-50"
-          >
-            {option}
-          </button>
-        ))}
+        <button
+          type="button"
+          disabled={buttonsDisabled}
+          onClick={() => submitFeedback("helpful")}
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus:text-black focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 active:bg-white active:text-black disabled:bg-white disabled:text-black disabled:opacity-60"
+        >
+          Yes, much clearer
+        </button>
+        <button
+          type="button"
+          disabled={buttonsDisabled}
+          onClick={() => submitFeedback("not_helpful")}
+          className="rounded-full border-2 border-black bg-white px-5 py-2.5 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-[3px_3px_0_#151515] focus:text-black focus-visible:text-black focus-visible:outline-2 focus-visible:outline-offset-4 active:bg-white active:text-black disabled:bg-white disabled:text-black disabled:opacity-60"
+        >
+          Not quite
+        </button>
       </div>
 
-      {feedback ? (
-        <p className="mt-4 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
-          Thanks. You selected: <strong>{feedback}</strong>
+      {status === "sent" ? (
+        <p aria-live="polite" className="mt-4 border-l-4 border-black bg-white/60 p-3 text-sm">
+          Thanks for the feedback.
+        </p>
+      ) : null}
+
+      {status === "failed" ? (
+        <p aria-live="polite" className="mt-4 border-l-4 border-black bg-white/60 p-3 text-sm">
+          Feedback was not sent.
         </p>
       ) : null}
     </section>

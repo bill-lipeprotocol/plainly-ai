@@ -8,13 +8,17 @@
     "start": "next start",
     "lint": "eslint",
     "test:api": "node --no-warnings --experimental-strip-types scripts/testPlainlyApi.ts",
+    "test:extract": "node --no-warnings --experimental-strip-types scripts/testDocumentExtraction.ts",
+    "test:transcription": "node --no-warnings --experimental-strip-types scripts/testImageTranscription.ts",
     "test:adapter": "node --no-warnings --experimental-strip-types scripts/testGemmaAdapter.ts",
     "test:gemma:live": "node --no-warnings --experimental-strip-types scripts/testOpenAiCompatibleGemma.ts",
     "test:api:live": "node --no-warnings --experimental-strip-types scripts/testLivePlainlyApi.ts",
     "check:provider": "node --no-warnings --experimental-strip-types scripts/checkProviderConfig.ts"
   },
   "dependencies": {
+    "mammoth": "^1.12.0",
     "next": "16.2.6",
+    "pdf-parse": "^2.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },

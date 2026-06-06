@@ -1,6 +1,7 @@
 import { callPlainlyModel } from "../lib/callGemma.ts";
 import {
   buildOpenAiCompatibleGemmaPrompt,
+  callOpenAiCompatibleGemma,
   callGemmaHostedMock,
   parseGemmaJsonResponse,
 } from "../lib/gemmaAdapter.ts";
@@ -12,6 +13,7 @@ type AdapterCheck = {
 };
 
 const checks: AdapterCheck[] = [];
+let mockedFetchCallCount = 0;
 
 function record(name: string, passed: boolean) {
   checks.push({ name, passed });
@@ -139,26 +141,40 @@ try {
 }
 
 try {
-  const result = await withModelProvider("mock", () => callPlainlyModel(modelInput));
-  record("mock provider returns result", Boolean(result.plainEnglishSummary));
-} catch {
-  record("mock provider returns result", false);
-}
-
-try {
-  const result = await withModelProvider(undefined, () => callPlainlyModel(modelInput));
-  record("missing provider returns mock result", Boolean(result.plainEnglishSummary));
-} catch {
-  record("missing provider returns mock result", false);
-}
-
-try {
-  const result = await withModelProvider("gemma-hosted", () =>
-    callPlainlyModel(modelInput)
+  const result = await withMockExplainEnabled(() =>
+    withModelProvider("mock", () => callPlainlyModel(modelInput))
   );
-  record("gemma-hosted provider returns mocked adapter result", Boolean(result));
+  record(
+    "explicit mock mode returns result",
+    Boolean(result.plainEnglishSummary)
+  );
 } catch {
-  record("gemma-hosted provider returns mocked adapter result", false);
+  record("explicit mock mode returns result", false);
+}
+
+try {
+  await withoutLiveExplainEnv(() =>
+    withModelProvider(undefined, () => callPlainlyModel(modelInput))
+  );
+  record("missing live provider fails instead of returning mock", false);
+} catch (error) {
+  record(
+    "missing live provider fails instead of returning mock",
+    error instanceof Error &&
+      error.message.startsWith("Live explanation is not configured.")
+  );
+}
+
+try {
+  const result = await withMockExplainEnabled(() =>
+    withModelProvider("gemma-hosted", () => callPlainlyModel(modelInput))
+  );
+  record(
+    "gemma-hosted mock requires explicit mock mode",
+    Boolean(result)
+  );
+} catch {
+  record("gemma-hosted mock requires explicit mock mode", false);
 }
 
 try {
@@ -230,7 +246,48 @@ try {
   record(
     "unknown provider fails safely",
     error instanceof Error &&
-      error.message === "Unsupported Plainly model provider: unknown-provider"
+      error.message ===
+        "Unsupported Plainly explanation provider: unknown-provider."
+  );
+}
+
+try {
+  let fetchCalls = 0;
+
+  const result = await withGemmaLiveEnv(() =>
+    withMockedFetch(async () => {
+      fetchCalls += 1;
+
+      if (fetchCalls === 1) {
+        return new Response(null, { status: 503 });
+      }
+
+      return openAiCompatibleResponse();
+    }, () => callOpenAiCompatibleGemma(modelInput))
+  );
+
+  record(
+    "OpenAI-compatible live adapter retries one transient provider status",
+    fetchCalls === 2 && Boolean(result.plainEnglishSummary)
+  );
+} catch {
+  record("OpenAI-compatible live adapter retries one transient provider status", false);
+}
+
+try {
+  await withGemmaLiveEnv(() =>
+    withMockedFetch(async () => {
+      return new Response(null, { status: 400 });
+    }, () => callOpenAiCompatibleGemma(modelInput))
+  );
+
+  record("OpenAI-compatible live adapter does not retry non-transient status", false);
+} catch (error) {
+  record(
+    "OpenAI-compatible live adapter does not retry non-transient status",
+    error instanceof Error &&
+      error.message === "Provider returned status 400." &&
+      getMockedFetchCallCount() === 1
   );
 }
 
@@ -264,6 +321,47 @@ async function withModelProvider<T>(
       delete process.env.PLAINLY_MODEL_PROVIDER;
     } else {
       process.env.PLAINLY_MODEL_PROVIDER = previousProvider;
+    }
+  }
+}
+
+async function withMockExplainEnabled<T>(
+  callback: () => Promise<T>
+): Promise<T> {
+  const previousValue = process.env.NEXT_PUBLIC_USE_MOCK_EXPLAIN;
+  process.env.NEXT_PUBLIC_USE_MOCK_EXPLAIN = "true";
+
+  try {
+    return await callback();
+  } finally {
+    restoreEnvValue("NEXT_PUBLIC_USE_MOCK_EXPLAIN", previousValue);
+  }
+}
+
+async function withoutLiveExplainEnv<T>(
+  callback: () => Promise<T>
+): Promise<T> {
+  const names = [
+    "NEXT_PUBLIC_USE_MOCK_EXPLAIN",
+    "GEMINI_API_KEY",
+    "GOOGLE_GENERATIVE_AI_API_KEY",
+    "GOOGLE_API_KEY",
+    "GEMMA_API_URL",
+    "GEMMA_MODEL_NAME",
+  ];
+  const previousValues = new Map(
+    names.map((name) => [name, process.env[name]])
+  );
+
+  for (const name of names) {
+    delete process.env[name];
+  }
+
+  try {
+    return await callback();
+  } finally {
+    for (const [name, value] of previousValues) {
+      restoreEnvValue(name, value);
     }
   }
 }
@@ -313,5 +411,69 @@ async function withoutGemmaModelName<T>(callback: () => Promise<T>): Promise<T> 
     } else {
       process.env.GEMMA_MODEL_NAME = previousModelName;
     }
+  }
+}
+
+async function withGemmaLiveEnv<T>(callback: () => Promise<T>): Promise<T> {
+  const previousApiUrl = process.env.GEMMA_API_URL;
+  const previousModelName = process.env.GEMMA_MODEL_NAME;
+  const previousApiKey = process.env.GEMMA_API_KEY;
+  const previousTimeout = process.env.GEMMA_TIMEOUT_MS;
+
+  process.env.GEMMA_API_URL = "http://127.0.0.1:1/v1/chat/completions";
+  process.env.GEMMA_MODEL_NAME = "synthetic-test-model";
+  delete process.env.GEMMA_API_KEY;
+  process.env.GEMMA_TIMEOUT_MS = "5000";
+
+  try {
+    return await callback();
+  } finally {
+    restoreEnvValue("GEMMA_API_URL", previousApiUrl);
+    restoreEnvValue("GEMMA_MODEL_NAME", previousModelName);
+    restoreEnvValue("GEMMA_API_KEY", previousApiKey);
+    restoreEnvValue("GEMMA_TIMEOUT_MS", previousTimeout);
+  }
+}
+
+async function withMockedFetch<T>(
+  fetchImplementation: typeof fetch,
+  callback: () => Promise<T>
+): Promise<T> {
+  const previousFetch = globalThis.fetch;
+  mockedFetchCallCount = 0;
+
+  globalThis.fetch = (async (...args: Parameters<typeof fetch>) => {
+    mockedFetchCallCount += 1;
+    return fetchImplementation(...args);
+  }) as typeof fetch;
+
+  try {
+    return await callback();
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
+}
+
+function getMockedFetchCallCount(): number {
+  return mockedFetchCallCount;
+}
+
+function openAiCompatibleResponse(): Response {
+  return Response.json({
+    choices: [
+      {
+        message: {
+          content: JSON.stringify(mockResult),
+        },
+      },
+    ],
+  });
+}
+
+function restoreEnvValue(key: string, value: string | undefined) {
+  if (typeof value === "undefined") {
+    delete process.env[key];
+  } else {
+    process.env[key] = value;
   }
 }
