@@ -18,25 +18,35 @@ export function ResultView({
   documentType,
 }: ResultViewProps) {
   return (
-    <section className="mx-auto max-w-3xl px-6 py-10">
-      <h2 className="text-3xl font-bold tracking-tight">
-        Here&apos;s the plain-English version
-      </h2>
+    <section
+      aria-live="polite"
+      className="reveal-up bg-[#151515] px-5 py-24 text-white sm:px-8"
+    >
+      <div className="mx-auto max-w-6xl">
+        <div className="grid gap-6 lg:grid-cols-[.65fr_1fr] lg:items-end">
+          <p className="font-display text-sm font-extrabold uppercase tracking-[0.2em] text-[var(--lime)]">
+            02 / Understand it
+          </p>
+          <div>
+            <h2 className="font-display text-5xl font-extrabold leading-[0.95] tracking-[-0.06em] sm:text-7xl">
+              Here&apos;s what it says.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">
+              Based only on the text you pasted. Check the original document for
+              anything missing, especially dates, amounts, and instructions.
+            </p>
+          </div>
+        </div>
 
-      <p className="mt-3 text-slate-700">
-        This explanation is based only on the text you pasted. If a page,
-        deadline, amount, or instruction is missing, check the original document
-        or ask the sender.
-      </p>
-
-      <div className="mt-6 space-y-5">
+        <div className="mt-12 space-y-6">
         {showHighRiskAlert ? <AlertBanner /> : null}
 
-        <ResultSection title="Quick Summary">
+        <ResultSection title="The short version" number="01" variant="featured">
           <p>{result.plainEnglishSummary}</p>
         </ResultSection>
 
-        <ResultSection title="What This Looks Like">
+        <div className="grid gap-6 md:grid-cols-2">
+        <ResultSection title="What this looks like" number="02">
           <p>
             <strong>Type:</strong> {result.documentTypeGuess.type}
           </p>
@@ -48,7 +58,7 @@ export function ResultView({
           </p>
         </ResultSection>
 
-        <ResultSection title="Dates to Notice">
+        <ResultSection title="Dates to notice" number="03" accent="lime">
           {result.importantDates.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
               {result.importantDates.map((item) => (
@@ -63,7 +73,7 @@ export function ResultView({
           )}
         </ResultSection>
 
-        <ResultSection title="Money Mentioned">
+        <ResultSection title="Money mentioned" number="04" accent="coral">
           {result.moneyMentioned.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
               {result.moneyMentioned.map((item) => (
@@ -80,7 +90,7 @@ export function ResultView({
           )}
         </ResultSection>
 
-        <ResultSection title="Possible Next Steps">
+        <ResultSection title="Possible next steps" number="05">
           {result.possibleActionSteps.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
               {result.possibleActionSteps.map((item) => (
@@ -92,7 +102,7 @@ export function ResultView({
           )}
         </ResultSection>
 
-        <ResultSection title="Questions You Could Ask">
+        <ResultSection title="Questions you could ask" number="06" accent="violet">
           {result.questionsToAskSender.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
               {result.questionsToAskSender.map((item) => (
@@ -104,7 +114,7 @@ export function ResultView({
           )}
         </ResultSection>
 
-        <ResultSection title="Unclear or Worth Checking">
+        <ResultSection title="Worth checking" number="07">
           {result.unclearOrRiskyParts.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
               {result.unclearOrRiskyParts.map((item) => (
@@ -115,8 +125,9 @@ export function ResultView({
             <EmptySectionText text="No unclear parts were flagged from the pasted text." />
           )}
         </ResultSection>
+        </div>
 
-        <ResultSection title="Important Note" variant="notice">
+        <ResultSection title="One important note" number="08" variant="notice">
           <p>{result.notAdviceNotice}</p>
           <p className="mt-2">
             Plainly can help you understand text, but it is not a substitute for
@@ -131,16 +142,6 @@ export function ResultView({
         documentType={documentType}
         highRiskDetected={showHighRiskAlert}
       />
-
-      <div className="mt-8 rounded-2xl bg-slate-950 p-6 text-white">
-        <h3 className="text-xl font-semibold">
-          Want to help improve Plainly?
-        </h3>
-
-        <p className="mt-2 text-sm text-slate-200">
-          Use the feedback buttons above to tell us whether the explanation was
-          helpful. This MVP works best with short sections of text.
-        </p>
       </div>
     </section>
   );
@@ -150,25 +151,45 @@ function ResultSection({
   title,
   children,
   variant = "default",
+  number,
+  accent,
 }: {
   title: string;
   children: ReactNode;
-  variant?: "default" | "notice";
+  variant?: "default" | "notice" | "featured";
+  number: string;
+  accent?: "lime" | "coral" | "violet";
 }) {
+  const accentClass =
+    accent === "lime"
+      ? "bg-[var(--lime)]"
+      : accent === "coral"
+        ? "bg-[var(--coral)]"
+        : accent === "violet"
+          ? "bg-[var(--violet)] text-white"
+          : "bg-white";
+
   return (
     <div
       className={
         variant === "notice"
-          ? "rounded-2xl border border-sky-200 bg-sky-50 p-5 text-slate-800 shadow-sm"
-          : "rounded-2xl border border-slate-200 bg-white p-5 text-slate-800 shadow-sm"
+          ? "border-2 border-white/30 bg-white/10 p-6 text-white"
+          : variant === "featured"
+            ? "border-2 border-black bg-[var(--lime)] p-7 text-black shadow-[7px_7px_0_var(--coral)] sm:p-9"
+            : `border-2 border-black p-6 text-black shadow-[5px_5px_0_#6f6f6f] ${accentClass}`
       }
     >
-      <h3 className="mb-2 text-lg font-semibold text-slate-950">{title}</h3>
-      {children}
+      <div className="mb-4 flex items-center gap-3">
+        <span className="font-display text-xs font-extrabold opacity-50">
+          {number}
+        </span>
+        <h3 className="font-display text-xl font-extrabold">{title}</h3>
+      </div>
+      <div className="space-y-2 leading-7">{children}</div>
     </div>
   );
 }
 
 function EmptySectionText({ text }: { text: string }) {
-  return <p className="text-sm text-slate-600">{text}</p>;
+  return <p className="text-sm opacity-65">{text}</p>;
 }

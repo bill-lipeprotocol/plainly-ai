@@ -130,7 +130,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950">
+    <main className="min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       <LandingHero
         onPrimaryClick={scrollToForm}
         onSecondaryClick={useSampleNotice}
@@ -159,11 +159,22 @@ export default function Home() {
         />
       ) : null}
 
-      <footer className="mx-auto max-w-3xl px-6 py-10 text-center text-sm leading-6 text-slate-600">
-        <p>
-          Plainly explains pasted text in simple English. It is not professional
-          advice. Remove sensitive details before pasting.
-        </p>
+      <footer className="border-t-2 border-black bg-[var(--coral)] px-5 py-12 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-display text-4xl font-extrabold tracking-[-0.06em]">
+              plainly<span className="text-white">.</span>
+            </p>
+            <p className="mt-2 max-w-md text-sm leading-6">
+              Confusing paperwork, translated into language that sounds human.
+            </p>
+          </div>
+          <p className="max-w-xl text-xs leading-5 text-black/65 sm:text-right">
+            Plainly explains pasted text. It is not legal, medical, tax,
+            insurance, financial, or other professional advice. Remove
+            sensitive details before pasting.
+          </p>
+        </div>
       </footer>
     </main>
   );
