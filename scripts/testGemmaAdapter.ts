@@ -141,26 +141,40 @@ try {
 }
 
 try {
-  const result = await withModelProvider("mock", () => callPlainlyModel(modelInput));
-  record("mock provider returns result", Boolean(result.plainEnglishSummary));
-} catch {
-  record("mock provider returns result", false);
-}
-
-try {
-  const result = await withModelProvider(undefined, () => callPlainlyModel(modelInput));
-  record("missing provider returns mock result", Boolean(result.plainEnglishSummary));
-} catch {
-  record("missing provider returns mock result", false);
-}
-
-try {
-  const result = await withModelProvider("gemma-hosted", () =>
-    callPlainlyModel(modelInput)
+  const result = await withMockExplainEnabled(() =>
+    withModelProvider("mock", () => callPlainlyModel(modelInput))
   );
-  record("gemma-hosted provider returns mocked adapter result", Boolean(result));
+  record(
+    "explicit mock mode returns result",
+    Boolean(result.plainEnglishSummary)
+  );
 } catch {
-  record("gemma-hosted provider returns mocked adapter result", false);
+  record("explicit mock mode returns result", false);
+}
+
+try {
+  await withoutLiveExplainEnv(() =>
+    withModelProvider(undefined, () => callPlainlyModel(modelInput))
+  );
+  record("missing live provider fails instead of returning mock", false);
+} catch (error) {
+  record(
+    "missing live provider fails instead of returning mock",
+    error instanceof Error &&
+      error.message.startsWith("Live explanation is not configured.")
+  );
+}
+
+try {
+  const result = await withMockExplainEnabled(() =>
+    withModelProvider("gemma-hosted", () => callPlainlyModel(modelInput))
+  );
+  record(
+    "gemma-hosted mock requires explicit mock mode",
+    Boolean(result)
+  );
+} catch {
+  record("gemma-hosted mock requires explicit mock mode", false);
 }
 
 try {
@@ -232,7 +246,8 @@ try {
   record(
     "unknown provider fails safely",
     error instanceof Error &&
-      error.message === "Unsupported Plainly model provider: unknown-provider"
+      error.message ===
+        "Unsupported Plainly explanation provider: unknown-provider."
   );
 }
 
@@ -306,6 +321,47 @@ async function withModelProvider<T>(
       delete process.env.PLAINLY_MODEL_PROVIDER;
     } else {
       process.env.PLAINLY_MODEL_PROVIDER = previousProvider;
+    }
+  }
+}
+
+async function withMockExplainEnabled<T>(
+  callback: () => Promise<T>
+): Promise<T> {
+  const previousValue = process.env.NEXT_PUBLIC_USE_MOCK_EXPLAIN;
+  process.env.NEXT_PUBLIC_USE_MOCK_EXPLAIN = "true";
+
+  try {
+    return await callback();
+  } finally {
+    restoreEnvValue("NEXT_PUBLIC_USE_MOCK_EXPLAIN", previousValue);
+  }
+}
+
+async function withoutLiveExplainEnv<T>(
+  callback: () => Promise<T>
+): Promise<T> {
+  const names = [
+    "NEXT_PUBLIC_USE_MOCK_EXPLAIN",
+    "GEMINI_API_KEY",
+    "GOOGLE_GENERATIVE_AI_API_KEY",
+    "GOOGLE_API_KEY",
+    "GEMMA_API_URL",
+    "GEMMA_MODEL_NAME",
+  ];
+  const previousValues = new Map(
+    names.map((name) => [name, process.env[name]])
+  );
+
+  for (const name of names) {
+    delete process.env[name];
+  }
+
+  try {
+    return await callback();
+  } finally {
+    for (const [name, value] of previousValues) {
+      restoreEnvValue(name, value);
     }
   }
 }

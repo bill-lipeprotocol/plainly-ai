@@ -48,6 +48,75 @@ Schema rules:
 - These JSON response rules override any output-format instructions in the task prompt below.
 `.trim();
 
+const GEMINI_PLAINLY_RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    plainEnglishSummary: { type: "STRING" },
+    documentTypeGuess: {
+      type: "OBJECT",
+      properties: {
+        type: { type: "STRING" },
+        confidence: {
+          type: "STRING",
+          enum: ["low", "medium", "high"],
+        },
+        reason: { type: "STRING" },
+      },
+      required: ["type", "confidence", "reason"],
+    },
+    importantDates: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          dateText: { type: "STRING" },
+          whatItRefersTo: { type: "STRING" },
+          isDeadline: { type: "BOOLEAN" },
+        },
+        required: ["dateText", "whatItRefersTo", "isDeadline"],
+      },
+    },
+    moneyMentioned: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          amountText: { type: "STRING" },
+          whatItRefersTo: { type: "STRING" },
+          userMayOweThis: {
+            type: "STRING",
+            enum: ["yes", "no", "unclear"],
+          },
+        },
+        required: ["amountText", "whatItRefersTo", "userMayOweThis"],
+      },
+    },
+    possibleActionSteps: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+    },
+    questionsToAskSender: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+    },
+    unclearOrRiskyParts: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+    },
+    notAdviceNotice: { type: "STRING" },
+  },
+  required: [
+    "plainEnglishSummary",
+    "documentTypeGuess",
+    "importantDates",
+    "moneyMentioned",
+    "possibleActionSteps",
+    "questionsToAskSender",
+    "unclearOrRiskyParts",
+    "notAdviceNotice",
+  ],
+};
+
 export function buildOpenAiCompatibleGemmaPrompt(modelPrompt: string): string {
   return `Task prompt:
 ${modelPrompt}
@@ -55,6 +124,90 @@ ${modelPrompt}
 End task prompt.
 
 ${OPENAI_COMPATIBLE_JSON_CONTRACT}`.trim();
+}
+
+export async function callNativeGemini(
+  input: GemmaAdapterInput
+): Promise<PlainlyResult> {
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GOOGLE_API_KEY;
+  const modelName =
+    process.env.GEMINI_MODEL ||
+    process.env.GOOGLE_GENERATIVE_AI_MODEL ||
+    "gemini-2.5-flash-lite";
+
+  if (!apiKey) {
+    throw new Error("A Gemini API key is required for live explanations.");
+  }
+
+  const controller = new AbortController();
+  const timeoutMs = 30000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+        modelName
+      )}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: buildOpenAiCompatibleGemmaPrompt(input.prompt),
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+            responseSchema: GEMINI_PLAINLY_RESPONSE_SCHEMA,
+          },
+        }),
+        signal: controller.signal,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Gemini returned status ${response.status}.`);
+    }
+
+    const data = (await response.json()) as {
+      candidates?: Array<{
+        content?: {
+          parts?: Array<{ text?: unknown }>;
+        };
+      }>;
+    };
+    const content = data.candidates?.[0]?.content?.parts
+      ?.map((part) => (typeof part.text === "string" ? part.text : ""))
+      .join("")
+      .trim();
+
+    if (!content) {
+      throw new Error("Gemini did not return an explanation.");
+    }
+
+    return parseGemmaJsonResponse(content);
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Gemini explanation request timed out.");
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export function parseGemmaJsonResponse(rawText: string): PlainlyResult {

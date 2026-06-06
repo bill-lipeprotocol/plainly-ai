@@ -1,5 +1,6 @@
 import {
   callGemmaHostedMock,
+  callNativeGemini,
   callOpenAiCompatibleGemma,
 } from "./gemmaAdapter.ts";
 import { mockResult } from "./mockResult.ts";
@@ -9,6 +10,7 @@ export type { PlainlyModelInput } from "./plainlySchema.ts";
 
 export type PlainlyModelProvider =
   | "mock"
+  | "gemini"
   | "gemma-hosted"
   | "gemma-hosted-openai-compatible"
   | "gemma-hosted-custom-prompt"
@@ -17,16 +19,26 @@ export type PlainlyModelProvider =
 export async function callPlainlyModel(
   input: PlainlyModelInput
 ): Promise<PlainlyResult> {
-  const provider = process.env.PLAINLY_MODEL_PROVIDER || "mock";
+  const provider = process.env.PLAINLY_MODEL_PROVIDER;
+  const mockEnabled =
+    process.env.NEXT_PUBLIC_USE_MOCK_EXPLAIN?.toLowerCase() === "true";
 
-  if (provider === "mock") {
+  if (mockEnabled && (!provider || provider === "mock")) {
     return mockResult;
   }
 
   if (provider === "gemma-hosted") {
-    // Milestone 4C routes to a mocked hosted adapter only. Real hosted Gemma
-    // calls belong in a later milestone and must keep the no-logging rules.
+    if (!mockEnabled) {
+      throw new ExplainProviderConfigurationError(
+        "The configured explanation provider is mock-only. Configure Gemini or enable explicit mock mode."
+      );
+    }
+
     return callGemmaHostedMock(input);
+  }
+
+  if (provider === "gemini") {
+    return callNativeGemini(input);
   }
 
   if (provider === "gemma-hosted-openai-compatible") {
@@ -49,5 +61,36 @@ export async function callPlainlyModel(
     );
   }
 
-  throw new Error(`Unsupported Plainly model provider: ${provider}`);
+  if (!provider || provider === "mock") {
+    if (hasGeminiConfiguration()) {
+      return callNativeGemini(input);
+    }
+
+    if (process.env.GEMMA_API_URL && process.env.GEMMA_MODEL_NAME) {
+      return callOpenAiCompatibleGemma(input);
+    }
+
+    throw new ExplainProviderConfigurationError(
+      "Live explanation is not configured. Set a Gemini API key or configure the OpenAI-compatible explanation provider."
+    );
+  }
+
+  throw new ExplainProviderConfigurationError(
+    `Unsupported Plainly explanation provider: ${provider}.`
+  );
+}
+
+export class ExplainProviderConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ExplainProviderConfigurationError";
+  }
+}
+
+function hasGeminiConfiguration(): boolean {
+  return Boolean(
+    process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+      process.env.GOOGLE_API_KEY
+  );
 }
