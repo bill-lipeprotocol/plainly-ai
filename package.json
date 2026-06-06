@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test:api": "node --no-warnings --experimental-strip-types scripts/testPlainlyApi.ts",
     "test:extract": "node --no-warnings --experimental-strip-types scripts/testDocumentExtraction.ts",
+    "test:transcription": "node --no-warnings --experimental-strip-types scripts/testImageTranscription.ts",
     "test:adapter": "node --no-warnings --experimental-strip-types scripts/testGemmaAdapter.ts",
     "test:gemma:live": "node --no-warnings --experimental-strip-types scripts/testOpenAiCompatibleGemma.ts",
     "test:api:live": "node --no-warnings --experimental-strip-types scripts/testLivePlainlyApi.ts",
